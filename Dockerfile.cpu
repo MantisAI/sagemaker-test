@@ -1,0 +1,41 @@
+FROM python:3.7.8-slim-buster
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+    build-essential \
+    ca-certificates \
+    wget \
+    zlib1g-dev \
+    libreadline-gplv2-dev \
+    libncursesw5-dev \
+    libssl-dev \
+    libsqlite3-dev \
+    libgdbm-dev \
+    libc6-dev \
+    libbz2-dev \
+    tk-dev \
+    git \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /opt/ml/code
+
+COPY . .
+
+# 
+# NOTE: Because requirements.txt will end up in /opt/ml/code, SageMaker will try
+# to install all the packages when we run a job. This is a waste of time because
+# the packages will already be installed, so delete the requirements.txt to 
+# prevent this. We also need to move the train.py entrypoint to sit in 
+# /opt/ml/code so that SageMaker can find it.
+#
+
+RUN pip install --no-cache-dir -r requirements.txt \
+        && pip install --no-cache-dir . \
+        && pip install --no-cache-dir sagemaker-training \
+        && rm requirements.txt \
+        && cp ./src/train.py ./train.py
+
+ARG MLFLOW_URI
+ENV MLFLOW_URI=${ML_FLOW_URI}
+ENV SAGEMAKER_PROGRAM train.py

@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  cpu:
+    image: ${REPO_URL}:${VERSION}
+    build:
+      context: .
+      dockerfile: Dockerfile.cpu
+      #target: app
+      args:
+        MLFLOW_URI: ${MLFLOW_URI}
+    container_name: mnist
+    entrypoint: python /opt/ml/code/train.py
+
+  gpu:
+    image: ${REPO_URL}:${VERSION}-gpu
+    build:
+      context: .
+      dockerfile: Dockerfile.gpu
+      args:
+        GPU_BASE: ${GPU_BASE}
+        MLFLOW_URI: ${MLFLOW_URI}
+      #target: app
+    container_name: mnist
+    entrypoint: python /opt/ml/code/train.py
+

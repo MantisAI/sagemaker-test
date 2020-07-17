@@ -1,0 +1,70 @@
+stages:
+  download:
+    cmd: build/virtualenv/bin/python src/download.py
+    deps:
+    - src/download.py
+    params:
+    - download.data-url
+    - common.download-path
+    outs:
+    - data/raw/data.tar.gz
+  combine:
+    cmd: build/virtualenv/bin/python src/combine.py
+    deps:
+    - data/raw/data.tar.gz
+    - src/combine.py
+    outs:
+    - data/intermediate/data.jsonl
+    params:
+    - common.download-path
+    - common.all-data-path
+    - combine.label-mapping
+  prepare:
+    cmd: build/virtualenv/bin/python src/prepare.py
+    deps:
+    - data/intermediate/data.jsonl
+    - src/prepare.py
+    - src/CNN.py
+    - data/raw/glove.6B.50d.txt
+    outs:
+    - data/processed/test.npz
+    - data/processed/train.npz
+    - models/indices.pickle
+    params:
+    - common.test-path
+    - common.train-path
+    - common.indices-path
+    - prepare.test-prop
+    - prepare.data-path
+  train:
+    cmd: build/virtualenv/bin/python src/train.py
+    outs:
+    - models/saved_model.pb
+    - models/variables
+    - models/assets
+    deps:
+    - data/raw/glove.6B.50d.txt
+    - src/train.py
+    - src/CNN.py
+    - data/processed/test.npz
+    - data/processed/train.npz
+    - models/indices.pickle
+    params:
+    - common.test-path
+    - common.train-path
+    - common.indices-path
+    - train.output-path
+    - train.model-output-path
+    - train.embedding-path
+    - train.embedding-dim
+    - train.checkpoint
+    - train.checkpoint-path
+    - train.batch-size
+    - train.epochs
+    - train.learning-rate
+    - train.lowercase
+    - train.num-words
+    - train.seq-length
+    - train.oov-token
+    - train.padding-style
+    - train.trunc-style
