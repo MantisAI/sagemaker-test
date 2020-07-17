@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  mnist:
+    image: ${HOST}/${REPO}:${VERSION}
+    build:
+      context: .
+      target: app
+    container_name: mnist
+    command: python /opt/ml/code/train.py
+
