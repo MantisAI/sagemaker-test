@@ -18,8 +18,10 @@ FROM base as app
 COPY --from=builder /install/ /usr/local/lib/python3.7/site-packages/
 
 WORKDIR /opt/ml/
-COPY src/mnist_cnn.py ./code/train.py
+COPY src/mnist_cnn.py ./code/mnist_cnn.py
+COPY src/train.py ./code/train.py
 
 # define train.py as the script entry point
 ENV SAGEMAKER_PROGRAM train.py
 
+ENTRYPOINT /opt/ml/code/train.py

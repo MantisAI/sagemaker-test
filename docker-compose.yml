@@ -7,5 +7,7 @@ services:
       context: .
       target: app
     container_name: mnist
-    command: python /opt/ml/code/train.py
+    entrypoint: python /opt/ml/code/train.py
+    command: train
+
 
