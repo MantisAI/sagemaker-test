@@ -1,4 +1,4 @@
-FROM python:3.7.8-slim-buster as base
+FROM python:3.7.8-slim-buster
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
@@ -17,11 +17,10 @@ RUN apt-get update \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --no-cache-dir sagemaker-training
-COPY requirements.txt /opt/ml/code/requirements.txt
-RUN pip install --no-cache-dir -r /opt/ml/code/requirements.txt
 
 COPY src/train.py /opt/ml/code/train.py
-#COPY requirements.txt /opt/ml/code/requirements.txt
 
 ENV SAGEMAKER_PROGRAM train.py
