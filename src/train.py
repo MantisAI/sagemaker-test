@@ -82,7 +82,7 @@ def run():
         y_train,
         batch_size=batch_size,
         epochs=epochs,
-        verbose=1,
+        verbose=2,
         validation_data=(x_test, y_test),
     )
     score = model.evaluate(x_test, y_test, verbose=0)
