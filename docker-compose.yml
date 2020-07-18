@@ -5,9 +5,8 @@ services:
     image: ${HOST}/${REPO}:${VERSION}
     build:
       context: .
-      target: app
+      #target: app
     container_name: mnist
     entrypoint: python /opt/ml/code/train.py
-    command: train
 
 
