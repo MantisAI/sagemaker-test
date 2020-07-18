@@ -18,8 +18,10 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir sagemaker-training
+COPY requirements.txt /opt/ml/code/requirements.txt
+RUN pip install --no-cache-dir -r /opt/ml/code/requirements.txt
 
 COPY src/train.py /opt/ml/code/train.py
-COPY requirements.txt /opt/ml/code/requirements.txt
+#COPY requirements.txt /opt/ml/code/requirements.txt
 
 ENV SAGEMAKER_PROGRAM train.py
