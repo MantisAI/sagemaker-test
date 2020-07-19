@@ -1,2 +1,6 @@
+tqdm
 sagemaker
 sagemaker-training
+dvc
+dvc[s3]
+boto3
