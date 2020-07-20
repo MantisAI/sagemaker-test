@@ -14,6 +14,7 @@ $(VIRTUALENV)/.installed: requirements.txt
 	virtualenv --python $(PYTHON_VERSION) $(VIRTUALENV)
 	$(VIRTUALENV)/bin/pip3 install -r requirements.txt
 	$(VIRTUALENV)/bin/pip3 install -r requirements_extra.txt
+	$(VIRTUALENV)/bin/pip3 install -e .
 	touch $@
 
 # Update the requirements to latest. This is required because typically we won't

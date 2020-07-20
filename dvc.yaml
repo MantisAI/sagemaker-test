@@ -1,0 +1,9 @@
+stages:
+  prepare:
+    cmd: python src/prepare_data.py
+    deps:
+    - data/raw
+    - src/prepare_data.py
+    outs:
+    - data/processed/test.jsonl
+    - data/processed/train.jsonl

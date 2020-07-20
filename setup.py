@@ -1,9 +1,10 @@
 from setuptools import setup
+import os
 
 setup(
     name="sagemaker_example",
     packages=["src"],
-    version="0.0.0.9000",
+    version=os.getenv("VERSION"),
     description="SageMaker example",
     author="Matthew Upson",
     author_email="matt@muanalytics.co.uk",

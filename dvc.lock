@@ -1,0 +1,12 @@
+prepare:
+  cmd: python src/prepare_data.py
+  deps:
+  - path: data/raw
+    md5: fc34a511ddd26bc258db7f619b2a3cf4.dir
+  - path: src/prepare_data.py
+    md5: 836e2e78441dd422ebb13c1f4719acab
+  outs:
+  - path: data/processed/test.jsonl
+    md5: 182147f7086dadf477f0fc2dc40e23c7
+  - path: data/processed/train.jsonl
+    md5: 36bdae3539228e40d8980cae0ce93b1e
