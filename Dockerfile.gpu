@@ -1,4 +1,6 @@
-FROM 763104351884.dkr.ecr.eu-west-1.amazonaws.com/tensorflow-training:2.2.0-gpu-py37-cu102-ubuntu18.04 as base
+ARG GPU_BASE
+
+FROM $GPU_BASE as base
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
@@ -17,8 +19,9 @@ RUN apt-get update \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+#COPY requirements.txt ./
+#RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install typer
 
 # Don't need to install sagemaker as it will exist on the tensorflow image
 #RUN pip install --no-cache-dir sagemaker-training

@@ -10,7 +10,7 @@ ROLE_ARN = os.getenv("ROLE_ARN")
 INSTANCE_TYPE = os.getenv("INSTANCE_TYPE")
 
 estimator = Estimator(
-    image_name=f"{HOST}/{REPO}:{VERSION}",
+    image_name=f"{HOST}/{REPO}:{VERSION}-gpu",
     role=ROLE_ARN,
     train_instance_count=1,
     train_instance_type=INSTANCE_TYPE,

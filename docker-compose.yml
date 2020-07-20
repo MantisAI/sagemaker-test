@@ -5,8 +5,20 @@ services:
     image: ${HOST}/${REPO}:${VERSION}
     build:
       context: .
+      dockerfile: Dockerfile
       #target: app
     container_name: mnist
     entrypoint: python /opt/ml/code/train.py
 
+
+  mnist-gpu:
+    image: ${HOST}/${REPO}:${VERSION}-gpu
+    build:
+      context: .
+      dockerfile: Dockerfile.gpu
+      args:
+        GPU_BASE: ${GPU_BASE}
+      #target: app
+    container_name: mnist
+    entrypoint: python /opt/ml/code/train.py
 
