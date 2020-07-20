@@ -42,4 +42,18 @@ docker-login:
 .env: .envrc
 	sed -e "/export/!d" -e "s/export //g" $< > $@ 
 
+BASE_URL := http://ai.stanford.edu/~amaas/data/sentiment
+RAW_DATA := aclImdb_v1.tar.gz
+
+data/raw: 
+	mkdir data/raw -p
+
+data/raw/$(RAW_DATA): data/raw
+	curl -L $(BASE_URL)/$(RAW_DATA) --output $@
+
+data/raw/aclImdb: data/raw/$(RAW_DATA)
+	(cd data/raw/ && tar -xf $(RAW_DATA))
+
+get_raw_data: data/raw/aclImdb
+
 all: virtualenv
