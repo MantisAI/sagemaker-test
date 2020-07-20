@@ -12,6 +12,10 @@ source = {
     "test": ["data/raw/aclImdb/test/neg", "data/raw/aclImdb/test/pos"],
 }
 
+label_mapping = {
+    "pos": 1,
+    "neg": 0,
+}
 
 def combine_data(input_file_list, base_path, label):
     """Iterate through a list of files add them to a single file and save to
@@ -24,7 +28,7 @@ def combine_data(input_file_list, base_path, label):
         with open(path, "r") as fb:
             content = fb.read()
             out.append(
-                {"text": content, "label": label,}
+                {"text": content, "label": label_mapping[label],}
             )
 
     return out
