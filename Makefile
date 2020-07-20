@@ -35,26 +35,56 @@ update-requirements-txt:
 .PHONY: virtualenv
 virtualenv: $(VIRTUALENV)/.installed
 
+#
+# Log in to access ECR repositories
+#
+# Note that old versions of awscli may experience issues with command.
+#
+
 .PHONY: docker-login
 docker-login:
 	aws ecr get-login-password --region=eu-west-1 | sudo  docker login \
 		--username AWS --password-stdin ${ECR}
 
+#
+# Transcribe .envrc in .env for use in docker-compose (it will not read .envrc)
+#
+
 .env: .envrc
 	sed -e "/export/!d" -e "s/export //g" $< > $@ 
 
-BASE_URL := http://ai.stanford.edu/~amaas/data/sentiment
+#
+# Get Raw data
+#
+
+DATA_BASE_URL := http://ai.stanford.edu/~amaas/data/sentiment
 RAW_DATA := aclImdb_v1.tar.gz
 
 data/raw: 
 	mkdir data/raw -p
 
 data/raw/$(RAW_DATA): data/raw
-	curl -L $(BASE_URL)/$(RAW_DATA) --output $@
+	curl -L $(DATA_BASE_URL)/$(RAW_DATA) --output $@
 
 data/raw/aclImdb: data/raw/$(RAW_DATA)
 	(cd data/raw/ && tar -xf $(RAW_DATA))
 
 get_raw_data: data/raw/aclImdb
+
+#
+# Get glove word embedding
+#
+
+WE_URL := http://nlp.stanford.edu/data
+WE_ARCHIVE := glove.6B.zip
+WE_TEXT := glove.6B.50d.txt
+
+data/raw/$(WE_ARCHIVE): data/raw
+	curl -L $(WE_URL)/$(WE_TEXT) --output $@
+
+data/raw/$(WE_TEXT): data/raw/$(WE_ARCHIVE) data/raw 
+	(cd data/raw/ && unzip $< $@)
+
+get_word_embedding: data/raw/$(WE_TEXT)
 
 all: virtualenv
