@@ -38,9 +38,9 @@ class TextClassifier:
     def __init__(
         self,
         output_path: str,
+        model_output_path: str,
         seq_length: int = 1000,
         char_embedding: bool = True,
-        version: str = None,
     ):
         """A binary classification model based on a simple CNN
 
@@ -51,22 +51,18 @@ class TextClassifier:
                 examples. Anything longer than this will be truncated. Anything
                 shorter will be padded.
             char_embedding: Should a character embedding be built.
-            version: Model version number: an arbitrary string though nominally
-                a dateVer (2020.1.1) followed by purpose of model, e.g.:
-                multilabel or departments.
         """
 
         self.output_path = output_path
+        self.model_output_path = model_output_path
         self.seq_length = seq_length
         self.char_embedding = char_embedding
         self.fold = 0
-        self.version = version
 
         # Defined in load_word_embedding
 
         self.embedding_dim = 0  # type: int
         self.history = None  # type: tf.keras.model.fit
-
 
     def load_data(self, test_data_path: str, train_data_path: str):
         """Load data from jsonl file
@@ -167,7 +163,6 @@ class TextClassifier:
         Always saves to a default location: output_path + indices.pickle
         """
         indices = {}
-        indices["max_chars"] = self.max_chars
         indices["tokenizer"] = self.tokenizer
         with open(os.path.join(self.output_path, "indices.pickle"), "wb") as f:
             pickle.dump(indices, f)
@@ -269,27 +264,30 @@ class TextClassifier:
             epochs=epochs,
             validation_data=(self.X_test_padded, self.y_test),
             batch_size=batch_size,
+            verbose=2,
         )
 
-        self.model.save(os.path.join(self.output_path, "model.h5"))
+        self.model.save(os.path.join(self.model_output_path, "model.h5"))
 
 
+# Note that type hints seem to fail in some cases due to issue with typer
+# So I've not included them here.
 @app.command()
 def train(
-    batch_size=typer.Option(1024, "--batch_size"),
-    embedding_dim=typer.Option(50, "--embedding_dim"),
-    embedding_path=typer.Option("data/raw/glove.6B.50d.txt", "--embedding_path"),
-    epochs=typer.Option(3, "--epochs"),
-    learning_rate=typer.Option(0.01, "--learning_rate"),
-    lowercase=typer.Option(True, "--lowercase"),
-    num_words=typer.Option(1000, "--num_words"),
-    oov_token=typer.Option("<OOV>", "--oov_token"),
-    output_path=typer.Option("models", "--output_path"),
-    padding_style=typer.Option("pre", "--padding_style"),
-    test_data_path=typer.Option("data/processed/test.jsonl", "--test-data_path"),
-    train_data_path=typer.Option("data/processed/train.jsonl", "--train_data_path"),
-    trunc_style=typer.Option("pre", "--trunc_style"),
-    version=typer.Option("0.0.0.9000", "--version"),
+    test_data_path="data/processed/test.jsonl",
+    train_data_path="data/processed/train.jsonl",
+    output_path="models",
+    model_output_path="models",
+    embedding_path="data/raw/glove.6B.50d.txt",
+    embedding_dim=50,
+    batch_size=1024,
+    epochs=3,
+    learning_rate=0.01,
+    lowercase=True,
+    num_words=1000,
+    oov_token="<OOV>",
+    padding_style="pre",
+    trunc_style="pre",
 ):
     # Create output path if not exists
 
@@ -304,26 +302,37 @@ def train(
     fh.setFormatter(formatter)
     logger.addHandler(fh)
 
-    # Create the model
+    # Instantiate the model class
 
-    CNN = TextClassifier(output_path=output_path, version=version)
+    CNN = TextClassifier(output_path=output_path, model_output_path=model_output_path)
+
+    # Load the data from disk
+
     CNN.load_data(train_data_path, test_data_path)
+
+    # Prepare the data with tokenisation, padding, etc.
 
     CNN.prep_data(
         oov_token=oov_token,
         trunc_style=trunc_style,
         padding_style=padding_style,
-        num_words=num_words,
+        num_words=int(num_words),
         lowercase=lowercase,
-        save_indices=True
+        save_indices=True,
     )
+
+    # Load word embedding from disk
 
     CNN.load_word_embedding(
-        embedding_path=embedding_path, embedding_dim=embedding_dim,
+        embedding_path=embedding_path, embedding_dim=int(embedding_dim),
     )
 
+    # Fit the model
+
     CNN.fit(
-        epochs=epochs, batch_size=batch_size, learning_rate=learning_rate,
+        epochs=int(epochs),
+        batch_size=int(batch_size),
+        learning_rate=float(learning_rate),
     )
 
 

@@ -1,17 +1,17 @@
 version: '3.8'
 
 services:
-  mnist:
+  cpu:
     image: ${HOST}/${REPO}:${VERSION}
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.cpu
       #target: app
     container_name: mnist
     entrypoint: python /opt/ml/code/train.py
 
 
-  mnist-gpu:
+  gpu:
     image: ${HOST}/${REPO}:${VERSION}-gpu
     build:
       context: .

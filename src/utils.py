@@ -59,7 +59,7 @@ def read_jsonl(input_file):
     try:
         out = list(_yield_jsonl(input_file))
         logger.debug(f"Read {len(out)} lines from {input_file}")
+        return out
     except Exception:
         logger.exception(f"Problem reading {input_file}")
 
-    return out

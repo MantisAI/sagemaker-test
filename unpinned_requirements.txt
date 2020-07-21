@@ -3,3 +3,6 @@ pandas
 pyyaml
 typer
 sklearn
+dvc
+dvc[s3]
+boto3

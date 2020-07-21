@@ -1,6 +1,7 @@
 .DEFAULT_GOAL := all
 PYTHON_VERSION := python3.7
 ECR := 203149375586.dkr.ecr.eu-west-1.amazonaws.com
+S3_BUCKET := s3://muanalytics-data/sagemaker-test
 
 # Set the default location for the virtualenv to be stored
 
@@ -86,5 +87,17 @@ data/raw/$(WE_TEXT): data/raw/$(WE_ARCHIVE) data/raw
 	(cd data/raw/ && unzip $< $@)
 
 get_word_embedding: data/raw/$(WE_TEXT)
+
+#
+# Syncing data with s3. Note that DVC is preferred to this blanket approach!
+#
+
+.PHONY: sync_data_to_s3
+sync_data_to_s3:
+	aws s3 sync data/processed $(S3_BUCKET)/data/processed --exclude '*old/*'
+
+.PHONY: sync_data_from_s3
+sync_data_from_s3:
+	aws s3 sync $(S3_BUCKET)/data/processed data/processed --exclude '*old/*'
 
 all: virtualenv
