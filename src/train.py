@@ -57,7 +57,6 @@ class TextClassifier:
         self.model_output_path = model_output_path
         self.seq_length = seq_length
         self.char_embedding = char_embedding
-        self.fold = 0
 
         # Defined in load_word_embedding
 
@@ -99,7 +98,7 @@ class TextClassifier:
         padding_style: str = "pre",
         num_words: int = 10000,
         lowercase: bool = True,
-        save_indices: bool = False,
+        save_tokenizer: bool = False,
     ):
         """Prepare data for model fitting
 
@@ -113,8 +112,7 @@ class TextClassifier:
                 Anything shorter or longer will be padded or truncated using
                 the respective style defined by trinc_style and padding_style.
             lowercase: Convert tokens to lowercase when tokenizing.
-            save_indices: Save model artefacts to indices using `save_indices()`
-                method.
+            save_tokenizer: Save tokenizer to pickle using `save_tokenizer()`.
         """
 
         self.tokenizer = Tokenizer(
@@ -124,8 +122,8 @@ class TextClassifier:
 
         self.word_index = self.tokenizer.word_index
 
-        if save_indices:
-            self.save_indices()
+        if save_tokenizer:
+            self.save_tokenizer()
 
         self.vocab_size = len(self.word_index)
 
@@ -154,18 +152,13 @@ class TextClassifier:
             padding=padding_style,
         )
 
-    def save_indices(self):
-        """Save model artefacts to pickle
+    def save_tokenizer(self):
+        """Save tokenizer to pickle
 
-        Saves various model artefacts to a pickle file so that they can be
-        loaded at a later date for predictions.
-
-        Always saves to a default location: output_path + indices.pickle
+        Always saves to a default location: output_path + tokenizer.pickle
         """
-        indices = {}
-        indices["tokenizer"] = self.tokenizer
-        with open(os.path.join(self.output_path, "indices.pickle"), "wb") as f:
-            pickle.dump(indices, f)
+        with open(os.path.join(self.output_path, "tokenizer.pickle"), "wb") as f:
+            pickle.dump(self.tokenizer, f)
 
     def load_word_embedding(self, embedding_path, embedding_dim):
         """Load and prepare word embedding
@@ -318,7 +311,7 @@ def train(
         padding_style=padding_style,
         num_words=int(num_words),
         lowercase=lowercase,
-        save_indices=True,
+        save_tokenizer=True,
     )
 
     # Load word embedding from disk
