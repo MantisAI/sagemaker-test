@@ -34,13 +34,9 @@ app = typer.Typer()
 np.random.seed(1337)
 
 
-class TextClassifier:
+class CNN:
     def __init__(
-        self,
-        output_path: str,
-        model_output_path: str,
-        seq_length: int = 1000,
-        char_embedding: bool = True,
+        self, output_path: str, model_output_path: str, seq_length: int = 1000,
     ):
         """A binary classification model based on a simple CNN
 
@@ -50,16 +46,11 @@ class TextClassifier:
             seq_length: Length of tokens to be fed to the model as training
                 examples. Anything longer than this will be truncated. Anything
                 shorter will be padded.
-            char_embedding: Should a character embedding be built.
         """
 
         self.output_path = output_path
         self.model_output_path = model_output_path
         self.seq_length = seq_length
-        self.char_embedding = char_embedding
-
-        # Defined in load_word_embedding
-
         self.embedding_dim = 0  # type: int
         self.history = None  # type: tf.keras.model.fit
 
@@ -277,6 +268,7 @@ def train(
     epochs=3,
     learning_rate=0.01,
     lowercase=True,
+    seq_length=1000,
     num_words=1000,
     oov_token="<OOV>",
     padding_style="pre",
@@ -297,15 +289,19 @@ def train(
 
     # Instantiate the model class
 
-    CNN = TextClassifier(output_path=output_path, model_output_path=model_output_path)
+    cnn = CNN(
+        output_path=output_path,
+        model_output_path=model_output_path,
+        seq_length=seq_length,
+    )
 
     # Load the data from disk
 
-    CNN.load_data(train_data_path, test_data_path)
+    cnn.load_data(train_data_path, test_data_path)
 
     # Prepare the data with tokenisation, padding, etc.
 
-    CNN.prep_data(
+    cnn.prep_data(
         oov_token=oov_token,
         trunc_style=trunc_style,
         padding_style=padding_style,
@@ -316,13 +312,13 @@ def train(
 
     # Load word embedding from disk
 
-    CNN.load_word_embedding(
+    cnn.load_word_embedding(
         embedding_path=embedding_path, embedding_dim=int(embedding_dim),
     )
 
     # Fit the model
 
-    CNN.fit(
+    cnn.fit(
         epochs=int(epochs),
         batch_size=int(batch_size),
         learning_rate=float(learning_rate),
