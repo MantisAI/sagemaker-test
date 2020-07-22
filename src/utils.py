@@ -62,4 +62,3 @@ def read_jsonl(input_file):
         return out
     except Exception:
         logger.exception(f"Problem reading {input_file}")
-
