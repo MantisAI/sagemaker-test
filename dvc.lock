@@ -1,5 +1,5 @@
 prepare:
-  cmd: python src/prepare_data.py
+  cmd: python src/prepare.py
   deps:
   - path: data/raw/aclImdb/test/neg
     md5: dd29e247a53b56b89cdeb0a084410bf5.dir
@@ -9,10 +9,28 @@ prepare:
     md5: 4fd48d2358025aadcfe0e8a323e36e6d.dir
   - path: data/raw/aclImdb/train/pos
     md5: 1460353a0a1cb200b50db18f5bfc273f.dir
-  - path: src/prepare_data.py
+  - path: src/prepare.py
     md5: ee2a66a6fc7e832acbb633363d6ee2ef
   outs:
   - path: data/processed/test.jsonl
-    md5: a4fb0d0b6aac486ea828880cb7b02ef8
+    md5: 1b5b4a62e66f01c734158642921376bb
   - path: data/processed/train.jsonl
-    md5: 92f0979fee6a07377744f75c45bb41ea
+    md5: 09fcd808fea1330310e94e430e4bd0d2
+train:
+  cmd: python src/train.py
+  deps:
+  - path: data/processed/test.jsonl
+    md5: 1b5b4a62e66f01c734158642921376bb
+  - path: data/processed/train.jsonl
+    md5: 09fcd808fea1330310e94e430e4bd0d2
+  - path: data/raw/glove.6B.50d.txt
+    md5: 0fac3659c38a4c0e9432fe603de60b12
+  - path: src/train.py
+    md5: 3b2621a2ae5e36c6d9c234f68b73cd89
+  outs:
+  - path: models/log.txt
+    md5: ce3618bcf304c88adda1ba99b6b25922
+  - path: models/model.h5
+    md5: fc2f096d9f244b5d1dc62774fac161e7
+  - path: models/tokenizer.pickle
+    md5: 787ec44a26463728f725c720aa8c3c10
