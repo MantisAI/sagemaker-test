@@ -17,6 +17,7 @@ label_mapping = {
     "neg": 0,
 }
 
+
 def combine_data(input_file_list, base_path, label):
     """Iterate through a list of files add them to a single file and save to
     jsonl

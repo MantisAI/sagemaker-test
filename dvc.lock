@@ -1,12 +1,18 @@
 prepare:
   cmd: python src/prepare_data.py
   deps:
-  - path: data/raw
-    md5: 55a32e27dbd5e00d7470d96cbea18aa7.dir
+  - path: data/raw/aclImdb/test/neg
+    md5: dd29e247a53b56b89cdeb0a084410bf5.dir
+  - path: data/raw/aclImdb/test/pos
+    md5: 3fe69b39cbcb57a4b830ad26c41f4068.dir
+  - path: data/raw/aclImdb/train/neg
+    md5: 4fd48d2358025aadcfe0e8a323e36e6d.dir
+  - path: data/raw/aclImdb/train/pos
+    md5: 1460353a0a1cb200b50db18f5bfc273f.dir
   - path: src/prepare_data.py
-    md5: a9c2d987ac5f31ccb0a302ea25480ffa
+    md5: ee2a66a6fc7e832acbb633363d6ee2ef
   outs:
   - path: data/processed/test.jsonl
-    md5: 89dbfb6de1044835c488daad4272e852
+    md5: a4fb0d0b6aac486ea828880cb7b02ef8
   - path: data/processed/train.jsonl
-    md5: 35534046a7727bc0972eaf3ad84c78f6
+    md5: 92f0979fee6a07377744f75c45bb41ea

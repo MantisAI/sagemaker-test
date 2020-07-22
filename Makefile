@@ -100,4 +100,20 @@ sync_data_to_s3:
 sync_data_from_s3:
 	aws s3 sync $(S3_BUCKET)/data/processed data/processed --exclude '*old/*'
 
+#
+# Create DVC run
+#
+
+.PHONY: dvc_run
+dvc_run:
+	dvc run --force -n prepare \
+	    -d src/prepare_data.py \
+	    -d data/raw/aclImdb/test/neg \
+	    -d data/raw/aclImdb/test/pos \
+	    -d data/raw/aclImdb/train/neg \
+	    -d data/raw/aclImdb/train/pos \
+	    -o data/processed/train.jsonl \
+	    -o data/processed/test.jsonl \
+	    python src/prepare_data.py
+
 all: virtualenv
