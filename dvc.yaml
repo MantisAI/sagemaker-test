@@ -1,12 +1,12 @@
 stages:
-  prepare:
-    cmd: python src/prepare.py
+  combine:
+    cmd: python src/combine.py
     deps:
     - data/raw/aclImdb/test/neg
     - data/raw/aclImdb/test/pos
     - data/raw/aclImdb/train/neg
     - data/raw/aclImdb/train/pos
-    - src/prepare.py
+    - src/combine.py
     outs:
     - data/processed/test.jsonl
     - data/processed/train.jsonl
@@ -18,6 +18,4 @@ stages:
     - data/raw/glove.6B.50d.txt
     - src/train.py
     outs:
-    - models/log.txt
-    - models/model.h5
-    - models/tokenizer.pickle
+    - models

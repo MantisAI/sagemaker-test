@@ -104,17 +104,17 @@ sync_data_from_s3:
 # Create DVC run
 #
 
-.PHONY: prepare
-prepare:
-	dvc run --force -n prepare \
-	    -d src/prepare.py \
+.PHONY: combine
+combine:
+	dvc run --force -n combine \
+	    -d src/combine.py \
 	    -d data/raw/aclImdb/test/neg \
 	    -d data/raw/aclImdb/test/pos \
 	    -d data/raw/aclImdb/train/neg \
 	    -d data/raw/aclImdb/train/pos \
 	    -o data/processed/train.jsonl \
 	    -o data/processed/test.jsonl \
-	    python src/prepare.py
+	    python src/combine.py
 
 .PHONY: train
 train:
@@ -123,9 +123,7 @@ train:
 	    -d data/raw/glove.6B.50d.txt \
 	    -d data/processed/train.jsonl \
 	    -d data/processed/test.jsonl \
-	    -o models/log.txt \
-	    -o models/model.h5 \
-	    -o models/tokenizer.pickle \
+	    -o models \
 	    python src/train.py
 
 all: virtualenv

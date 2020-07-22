@@ -1,5 +1,5 @@
-prepare:
-  cmd: python src/prepare.py
+combine:
+  cmd: python src/combine.py
   deps:
   - path: data/raw/aclImdb/test/neg
     md5: dd29e247a53b56b89cdeb0a084410bf5.dir
@@ -9,7 +9,7 @@ prepare:
     md5: 4fd48d2358025aadcfe0e8a323e36e6d.dir
   - path: data/raw/aclImdb/train/pos
     md5: 1460353a0a1cb200b50db18f5bfc273f.dir
-  - path: src/prepare.py
+  - path: src/combine.py
     md5: ee2a66a6fc7e832acbb633363d6ee2ef
   outs:
   - path: data/processed/test.jsonl
@@ -26,11 +26,7 @@ train:
   - path: data/raw/glove.6B.50d.txt
     md5: 0fac3659c38a4c0e9432fe603de60b12
   - path: src/train.py
-    md5: 3b2621a2ae5e36c6d9c234f68b73cd89
+    md5: c2c5307b4b40f88a6c21469f36a0dd18
   outs:
-  - path: models/log.txt
-    md5: ce3618bcf304c88adda1ba99b6b25922
-  - path: models/model.h5
-    md5: fc2f096d9f244b5d1dc62774fac161e7
-  - path: models/tokenizer.pickle
-    md5: 787ec44a26463728f725c720aa8c3c10
+  - path: models
+    md5: 17cda37a3e36afe35b807be508421a26.dir
