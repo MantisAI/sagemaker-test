@@ -292,7 +292,7 @@ def train(
     cnn = CNN(
         output_path=output_path,
         model_output_path=model_output_path,
-        seq_length=seq_length,
+        seq_length=int(seq_length),
     )
 
     # Load the data from disk
