@@ -6,9 +6,9 @@
 import logging
 import os
 import pickle
+import random
 
 import numpy as np
-
 import tensorflow as tf
 import typer
 from sklearn.metrics import (
@@ -18,12 +18,13 @@ from sklearn.metrics import (
     precision_score,
     recall_score,
 )
-from src.load_word_embedding import load_word_embedding
-from src.logger import logger
-from src.utils import read_jsonl
 from tensorflow.keras import optimizers
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import Tokenizer
+
+from src.load_word_embedding import load_word_embedding
+from src.logger import logger
+from src.utils import read_jsonl
 
 app = typer.Typer()
 
@@ -52,27 +53,29 @@ class CNN:
         self.seq_length = seq_length
         self.embedding_dim = 0  # type: int
         self.history = None  # type: tf.keras.model.fit
-        self.callbacks = [] # type: list
+        self.callbacks = []  # type: list
 
-    def load_data(self, test_data_path: str, train_data_path: str):
+    def load_data(self, data_path: str, test_prop: float):
         """Load data from jsonl file
 
         Args:
             data_path: Path to jsonl file.
         """
 
-        test_data = read_jsonl(test_data_path)
-        train_data = read_jsonl(train_data_path)
+        all_data = read_jsonl(data_path)
+
+        random.shuffle(all_data)
+        test_index = round(len(all_data) * test_prop)
 
         X_train, X_test, y_train, y_test = [], [], [], []
 
-        for review in train_data:
-            X_train.append(review["text"])
-            y_train.append(review["label"])
-
-        for review in test_data:
+        for review in all_data[:test_index]:
             X_test.append(review["text"])
             y_test.append(review["label"])
+
+        for review in all_data[test_index:]:
+            X_train.append(review["text"])
+            y_train.append(review["label"])
 
         self.y_test = np.array(y_test).astype(int)
         self.y_train = np.array(y_train).astype(int)
@@ -110,6 +113,55 @@ class CNN:
         self.vocab_size = indices["vocab_size"]
         self.tokenizer = indices["tokenizer"]
         self.word_index = self.tokenizer.word_index
+
+    def save_train_test_data(self, path: str):
+        """Saves train and test data to disk as numpy arrays
+
+        This is to ensure that a consistent dataset is used for single model
+        runs, and is unrelated to cross validation.
+
+        Args:
+            path: Path to folder in which train and test arrays will be stored.
+            basename: Base filename onto which one of ["_test", "_train"] will
+                be appended.
+        """
+
+        train_path = os.path.join(path, "train")
+        test_path = os.path.join(path, "test")
+
+        np.savez(train_path, x=self.X_train_padded, y=self.y_train)
+        logger.info(f"Train data saved to {train_path}.npz")
+
+        np.savez(test_path, x=self.X_test_padded, y=self.y_test)
+        logger.info(f"Train data saved to {test_path}.npz")
+
+    def load_train_test_data(self, path: str):
+        """Load data from pre-split numpy arrays
+
+        Loads data from numpy arrays that were saved using the
+        save_train_test_data() method. Args should match between the two
+        methods.
+
+        Args:
+            path: Path to folder in which train and test arrays are stored.
+            basename: Base filename onto which one of ["_test", "_train"] will
+                be appended.
+        """
+
+        train_path = os.path.join(path, "train.npz")
+        test_path = os.path.join(path, "test.npz")
+
+        train = np.load(train_path, allow_pickle=True)
+        logger.info(f"Train data loaded from {train_path}")
+
+        test = np.load(test_path, allow_pickle=True)
+        logger.info(f"Test data loaded from {test_path}")
+
+        self.X_train_padded, self.y_train = train["x"], train["y"]
+        self.X_test_padded, self.y_test = test["x"], test["y"]
+
+        logger.info(f"Train data shape: {len(self.X_train_padded)} {len(self.y_train)}")
+        logger.info(f"Test data shape: {len(self.X_test_padded)} {len(self.y_test)}")
 
     def prep_data(
         self,
@@ -257,31 +309,28 @@ class CNN:
             checkpoint_path: Path to where checkpoints will be saved.
         """
 
-        #early_stopping = tf.keras.callbacks.EarlyStopping(
+        # early_stopping = tf.keras.callbacks.EarlyStopping(
         #    monitor="val_loss",
         #    patience=early_stopping_patience,
         #    verbose=1,
         #    mode="auto",
-        #)
+        # )
 
-        #self.callbacks.append(early_stopping)
+        # self.callbacks.append(early_stopping)
 
-        #reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(
+        # reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(
         #    monitor="val_loss", factor=0.2, patience=5, min_lr=0.0001
-        #)
+        # )
 
-        #self.callbacks.append(reduce_lr)
+        # self.callbacks.append(reduce_lr)
 
         if checkpoint:
 
             checkpointer = tf.keras.callbacks.ModelCheckpoint(
-                filepath=checkpoint_path,
-                verbose=1,
-                save_best_only=True,
+                filepath=checkpoint_path, verbose=1, save_best_only=True,
             )
 
             self.callbacks.append(checkpointer)
-
 
     def fit(
         self,
@@ -319,11 +368,11 @@ class CNN:
             validation_data=(self.X_test_padded, self.y_test),
             batch_size=batch_size,
             verbose=2,
-            callbacks=self.callbacks
+            callbacks=self.callbacks,
         )
 
         # Don't save the model, this is handled by the checkpointer
-        #tf.saved_model.save(self.model, self.model_output_path)
+        # tf.saved_model.save(self.model, self.model_output_path)
 
 
 # Note that type hints seem to fail in some cases due to issue with typer
@@ -346,7 +395,7 @@ def train(
     padding_style="pre",
     trunc_style="pre",
     checkpoint=True,
-    checkpoint_path="models"
+    checkpoint_path="models",
 ):
     # Create output path if not exists
 

@@ -1,52 +1,49 @@
+""" Cycle through the files we want into the tar and combine into a jsonl
+file
+"""
 import logging
 import os
 import random
+import re
+import tarfile
+
+import yaml
 
 from src.utils import write_jsonl
+import src.logger
 from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
-source = {
-    "train": ["data/raw/aclImdb/train/neg", "data/raw/aclImdb/train/pos"],
-    "test": ["data/raw/aclImdb/test/neg", "data/raw/aclImdb/test/pos"],
-}
+# Get params from params file.
 
-label_mapping = {
-    "pos": 1,
-    "neg": 0,
-}
-
-
-def combine_data(input_file_list, base_path, label):
-    """Iterate through a list of files add them to a single file and save to
-    jsonl
-    """
-    out = []
-
-    for file in tqdm(input_file_list):
-        path = os.path.join(base_path, file)
-        with open(path, "r") as fb:
-            content = fb.read()
-            out.append(
-                {"text": content, "label": label_mapping[label],}
-            )
-
-    return out
+params = yaml.safe_load(open("params.yaml"))
 
 
 if __name__ == "__main__":
 
-    os.makedirs("data/processed", exist_ok=True)
+    os.makedirs(os.path.split(params["common"]["all-data-path"])[0], exist_ok=True)
 
-    for k, v in source.items():
-        logger.info("Processing %s", k)
-        out = []  # type: list
+    out = []
 
-        for dir in v:
-            files = os.listdir(dir)
-            label = os.path.basename(dir)
+    logger.info("Reading data form %s", params["common"]["download-path"])
+    tar = tarfile.open(params["common"]["download-path"], "r:gz")
 
-            out.extend(combine_data(files, dir, label))
-        random.shuffle(out)
-        write_jsonl(out, f"data/processed/{k}.jsonl")
+    for member in tqdm(tar.getmembers()):
+        if re.match(r".*(train|test)\/(pos|neg).*", member.name):
+            label = os.path.split(member.name)[0].split("/")[-1]
+            file = tar.extractfile(member)
+
+            if file is not None:
+                logger.debug("Reading contents of %s", member.name)
+                content = file.read().decode("utf-8")
+                out.append(
+                    {
+                        "text": content,
+                        "label": params["combine"]["label-mapping"][label],
+                    }
+                )
+
+    random.shuffle(out)
+    write_jsonl(out, params["common"]["all-data-path"])
+    logger.info("Wrote data to %s", params["common"]["all-data-path"])

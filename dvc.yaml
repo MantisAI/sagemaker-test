@@ -1,22 +1,63 @@
 stages:
+  download:
+    cmd: python src/download.py
+    deps:
+    - src/download.py
+    params:
+    - download.data-url
+    - common.download-path
+    outs:
+    - data/raw/data.tar.gz
   combine:
     cmd: python src/combine.py
     deps:
-    - data/raw/aclImdb/test/neg
-    - data/raw/aclImdb/test/pos
-    - data/raw/aclImdb/train/neg
-    - data/raw/aclImdb/train/pos
+    - data/raw/data.tar.gz
     - src/combine.py
     outs:
-    - data/processed/test.jsonl
-    - data/processed/train.jsonl
+    - data/intermediate/data.jsonl
+    params:
+    - common.download-path
+    - common.all-data-path
+    - combine.label-mapping
   prepare:
-    cmd: python src/train.py prepare
+    cmd: python src/prepare.py
     deps:
-    - data/processed/test.jsonl
-    - data/processed/train.jsonl
-    - src/train.py
+    - data/intermediate/data.jsonl
+    - src/prepare.py
+    - src/CNN.py
     outs:
     - data/processed/test.npz
     - data/processed/train.npz
     - models/indices.pickle
+    params:
+    - common.processed-folder
+    - prepare.test-prop
+    - prepare.data-path
+  train:
+    cmd: python src/train.py
+    outs:
+    - models/saved_model.pb
+    - models/variables
+    deps:
+    - src/local_run.py
+    - src/train.py
+    - src/CNN.py
+    - data/processed/test.npz
+    - data/processed/train.npz
+    params:
+    - common.processed-folder
+    - train.output-path
+    - train.model-output-path
+    - train.embedding-path
+    - train.embedding-dim
+    - train.checkpoint
+    - train.checkpoint-path
+    - train.batch-size
+    - train.epochs
+    - train.learning-rate
+    - train.lowercase
+    - train.num-words
+    - train.seq-length
+    - train.oov-token
+    - train.padding-style
+    - train.trunc-style

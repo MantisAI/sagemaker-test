@@ -1,34 +1,86 @@
 combine:
   cmd: python src/combine.py
   deps:
-  - path: data/raw/aclImdb/test/neg
-    md5: dd29e247a53b56b89cdeb0a084410bf5.dir
-  - path: data/raw/aclImdb/test/pos
-    md5: 3fe69b39cbcb57a4b830ad26c41f4068.dir
-  - path: data/raw/aclImdb/train/neg
-    md5: 4fd48d2358025aadcfe0e8a323e36e6d.dir
-  - path: data/raw/aclImdb/train/pos
-    md5: 1460353a0a1cb200b50db18f5bfc273f.dir
+  - path: data/raw/data.tar.gz
+    md5: 7c2ac02c03563afcf9b574c7e56c153a
   - path: src/combine.py
-    md5: ee2a66a6fc7e832acbb633363d6ee2ef
+    md5: 876a6fea02595c925124d6e74f8cb362
+  params:
+    params.yaml:
+      combine.label-mapping:
+        pos: 1
+        neg: 0
+      common.all-data-path: data/intermediate/data.jsonl
+      common.download-path: data/raw/data.tar.gz
   outs:
-  - path: data/processed/test.jsonl
-    md5: 1b5b4a62e66f01c734158642921376bb
-  - path: data/processed/train.jsonl
-    md5: 09fcd808fea1330310e94e430e4bd0d2
+  - path: data/intermediate/data.jsonl
+    md5: 98dded493ee88a31d04fca1214bf0270
 prepare:
-  cmd: python src/train.py prepare
+  cmd: python src/prepare.py
   deps:
-  - path: data/processed/test.jsonl
-    md5: 1b5b4a62e66f01c734158642921376bb
-  - path: data/processed/train.jsonl
-    md5: 09fcd808fea1330310e94e430e4bd0d2
-  - path: src/train.py
-    md5: 4daf1b62fdb277099bccf8cf759b34de
+  - path: data/intermediate/data.jsonl
+    md5: 98dded493ee88a31d04fca1214bf0270
+  - path: src/CNN.py
+    md5: 3d3d557d75f40ccf4a703b4495dff3e6
+  - path: src/prepare.py
+    md5: 3c540cb8fb210b507facfef8f4e5eb7f
+  params:
+    params.yaml:
+      common.processed-folder: data/processed
+      prepare.data-path: data/intermediate/data.jsonl
+      prepare.test-prop: 0.3
   outs:
   - path: data/processed/test.npz
-    md5: 1f385c94cd1b677c186e61bc91a6a94e
+    md5: d8d24637966ee645279d4a0a7ab5408d
   - path: data/processed/train.npz
-    md5: 5110b216fe6d54e6a22fbb247c030182
+    md5: 2e3a47e0ca6130d1231f70c5802fe9dd
   - path: models/indices.pickle
-    md5: 62b66c2fd96cd96ae309c0d880fadd57
+    md5: 03aa2e9e8b51f9da3278b72dd3e7fbcb
+train:
+  cmd: python src/train.py
+  deps:
+  - path: data/processed/test.npz
+    md5: d8d24637966ee645279d4a0a7ab5408d
+  - path: data/processed/train.npz
+    md5: 2e3a47e0ca6130d1231f70c5802fe9dd
+  - path: src/CNN.py
+    md5: 3d3d557d75f40ccf4a703b4495dff3e6
+  - path: src/local_run.py
+    md5: 92692e6e4c4b0d48518e97accdb48b8e
+  - path: src/train.py
+    md5: 4a297a52fbec7051c6251853f12e2144
+  params:
+    params.yaml:
+      common.processed-folder: data/processed
+      train.batch-size: 1024
+      train.checkpoint: true
+      train.checkpoint-path: models
+      train.embedding-dim: 50
+      train.embedding-path: data/raw/glove.6B.50d.txt
+      train.epochs: 2
+      train.learning-rate: 0.01
+      train.lowercase: true
+      train.model-output-path: models
+      train.num-words: 1000
+      train.oov-token: <OOV>
+      train.output-path: models
+      train.padding-style: pre
+      train.seq-length: 1000
+      train.trunc-style: pre
+  outs:
+  - path: models/saved_model.pb
+    md5: 13f2365652f2b1b48913d61966a4bea5
+  - path: models/variables
+    md5: 253316c42c9a340b33c97ebac9fbc203.dir
+download:
+  cmd: python src/download.py
+  deps:
+  - path: src/download.py
+    md5: 20add3d649bf80b1d933c0ee547e8ee4
+  params:
+    params.yaml:
+      common.download-path: data/raw/data.tar.gz
+      download.data-url: http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz
+  outs:
+  - path: data/raw/data.tar.gz
+    md5: 7c2ac02c03563afcf9b574c7e56c153a

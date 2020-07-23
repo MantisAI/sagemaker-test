@@ -1,0 +1,34 @@
+
+common:
+  download-path: data/raw/data.tar.gz
+  all-data-path: data/intermediate/data.jsonl
+  processed-folder: data/processed
+
+download:
+  data-url: http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz
+
+combine:
+  label-mapping:
+    pos: 1
+    neg: 0
+
+prepare:
+  data-path: data/intermediate/data.jsonl
+  test-prop: 0.3
+
+train:
+  output-path: models
+  model-output-path: models
+  embedding-path: data/raw/glove.6B.50d.txt
+  embedding-dim: 50
+  checkpoint: True
+  checkpoint-path: models
+  batch-size: 1024
+  learning-rate: 0.01
+  epochs: 2
+  lowercase: True
+  num-words: 1000
+  seq-length: 1000
+  oov-token: "<OOV>"
+  padding-style: pre
+  trunc-style: pre
