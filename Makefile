@@ -136,6 +136,8 @@ train:
 	    -d data/processed/train.jsonl \
 	    -d data/processed/test.jsonl \
 	    -o models/saved_model.pb \
+	    -o models/variables \
+	    -o models/assets \
 	    python src/train.py train
 
 all: virtualenv
