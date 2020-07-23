@@ -116,14 +116,26 @@ combine:
 	    -o data/processed/test.jsonl \
 	    python src/combine.py
 
+.PHONY: prepare
+prepare:
+	dvc run --force -n prepare \
+	    -d src/train.py \
+	    -d data/processed/train.jsonl \
+	    -d data/processed/test.jsonl \
+	    -o data/processed/train.npz \
+	    -o data/processed/test.npz \
+	    -o models/indices.pickle \
+	    python src/train.py prepare
+
 .PHONY: train
 train:
 	dvc run --force -n train  \
 	    -d src/train.py \
+	    -d models/indices.pickle \
 	    -d data/raw/glove.6B.50d.txt \
 	    -d data/processed/train.jsonl \
 	    -d data/processed/test.jsonl \
-	    -o models \
-	    python src/train.py
+	    -o models/saved_model.pb \
+	    python src/train.py train
 
 all: virtualenv

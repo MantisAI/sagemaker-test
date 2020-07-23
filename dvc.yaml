@@ -10,12 +10,13 @@ stages:
     outs:
     - data/processed/test.jsonl
     - data/processed/train.jsonl
-  train:
-    cmd: python src/train.py
+  prepare:
+    cmd: python src/train.py prepare
     deps:
     - data/processed/test.jsonl
     - data/processed/train.jsonl
-    - data/raw/glove.6B.50d.txt
     - src/train.py
     outs:
-    - models
+    - data/processed/test.npz
+    - data/processed/train.npz
+    - models/indices.pickle

@@ -18,3 +18,12 @@ Downloaded from http://ai.stanford.edu/~amaas/data/sentiment/ with:
 ```
 dvc get-url http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz data/
 ```
+
+If you are seeing: 
+
+```
+botocore.exceptions.ClientError: An error occurred (ValidationException) when calling the CreateTrainingJob operation: No S3 objects found under S3 URL "s3://muanalytics-dvc/sagemaker-test/09/fcd808fea1330310e94e430e4bd0d2" given
+in input data source. Please ensure that the bucket exists in the selected region (eu-west-1), that objects exist under that S3 prefix, and that the role "arn:aws:iam::203149375586:role/sagemaker-execution-role" has "s3:ListBucket" permissions on bucket "muanalytics-dvc".
+```
+
+Try `dvc push` as it is possible that the version of the input files is out of date on the remote (muanalytics-dvc)

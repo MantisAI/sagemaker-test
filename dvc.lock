@@ -16,17 +16,19 @@ combine:
     md5: 1b5b4a62e66f01c734158642921376bb
   - path: data/processed/train.jsonl
     md5: 09fcd808fea1330310e94e430e4bd0d2
-train:
-  cmd: python src/train.py
+prepare:
+  cmd: python src/train.py prepare
   deps:
   - path: data/processed/test.jsonl
     md5: 1b5b4a62e66f01c734158642921376bb
   - path: data/processed/train.jsonl
     md5: 09fcd808fea1330310e94e430e4bd0d2
-  - path: data/raw/glove.6B.50d.txt
-    md5: 0fac3659c38a4c0e9432fe603de60b12
   - path: src/train.py
-    md5: c2c5307b4b40f88a6c21469f36a0dd18
+    md5: 4daf1b62fdb277099bccf8cf759b34de
   outs:
-  - path: models
-    md5: 17cda37a3e36afe35b807be508421a26.dir
+  - path: data/processed/test.npz
+    md5: 1f385c94cd1b677c186e61bc91a6a94e
+  - path: data/processed/train.npz
+    md5: 5110b216fe6d54e6a22fbb247c030182
+  - path: models/indices.pickle
+    md5: 62b66c2fd96cd96ae309c0d880fadd57

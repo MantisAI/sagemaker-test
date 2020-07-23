@@ -3,8 +3,6 @@
 """Simple training script
 """
 
-from __future__ import annotations
-
 import logging
 import os
 import pickle
@@ -83,6 +81,35 @@ class CNN:
 
         logger.info("Train data shape: %s, %s", len(self.X_train), len(self.y_train))
         logger.info("Test data shape: %s, %s", len(self.X_test), len(self.y_test))
+
+    def save_indices(self):
+        """Save model artefacts to pickle
+
+        Saves various model artefacts to a pickle file so that they can be
+        loaded at a later date for predictions.
+
+        Always saves to a default location: output_path + indices.pickle
+        """
+        indices = {}
+        indices["word_index"] = self.word_index
+        indices["vocab_size"] = self.vocab_size
+        indices["tokenizer"] = self.tokenizer
+        with open(os.path.join(self.output_path, "indices.pickle"), "wb") as f:
+            pickle.dump(indices, f)
+
+    def load_indices(self):
+        """Loads model artefacts from pickle
+
+        Companion method to `save_indices()`. Loads an indices.pickle object
+        that has been saved with the `save_indices()`.
+        """
+
+        with open(os.path.join(self.output_path, "indices.pickle"), "rb") as f:
+            indices = pickle.load(f)
+        self.word_index = indices["word_index"]
+        self.vocab_size = indices["vocab_size"]
+        self.tokenizer = indices["tokenizer"]
+        self.word_index = self.tokenizer.word_index
 
     def prep_data(
         self,
@@ -230,20 +257,20 @@ class CNN:
             checkpoint_path: Path to where checkpoints will be saved.
         """
 
-        early_stopping = tf.keras.callbacks.EarlyStopping(
-            monitor="val_loss",
-            patience=early_stopping_patience,
-            verbose=1,
-            mode="auto",
-        )
+        #early_stopping = tf.keras.callbacks.EarlyStopping(
+        #    monitor="val_loss",
+        #    patience=early_stopping_patience,
+        #    verbose=1,
+        #    mode="auto",
+        #)
 
-        self.callbacks.append(early_stopping)
+        #self.callbacks.append(early_stopping)
 
-        reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(
-            monitor="val_loss", factor=0.2, patience=5, min_lr=0.0001
-        )
+        #reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(
+        #    monitor="val_loss", factor=0.2, patience=5, min_lr=0.0001
+        #)
 
-        self.callbacks.append(reduce_lr)
+        #self.callbacks.append(reduce_lr)
 
         if checkpoint:
 
