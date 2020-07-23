@@ -4,7 +4,7 @@ combine:
   - path: data/raw/data.tar.gz
     md5: 7c2ac02c03563afcf9b574c7e56c153a
   - path: src/combine.py
-    md5: 876a6fea02595c925124d6e74f8cb362
+    md5: 123f58a2fa9138494d91d61920776155
   params:
     params.yaml:
       combine.label-mapping:
@@ -14,16 +14,16 @@ combine:
       common.download-path: data/raw/data.tar.gz
   outs:
   - path: data/intermediate/data.jsonl
-    md5: 98dded493ee88a31d04fca1214bf0270
+    md5: 20e701f351e9dc573fc209517418165e
 prepare:
   cmd: python src/prepare.py
   deps:
   - path: data/intermediate/data.jsonl
-    md5: 98dded493ee88a31d04fca1214bf0270
+    md5: 20e701f351e9dc573fc209517418165e
   - path: src/CNN.py
     md5: 3d3d557d75f40ccf4a703b4495dff3e6
   - path: src/prepare.py
-    md5: 3c540cb8fb210b507facfef8f4e5eb7f
+    md5: 18ccdd4715a319a9aa8592c7cec0194c
   params:
     params.yaml:
       common.processed-folder: data/processed
@@ -31,18 +31,18 @@ prepare:
       prepare.test-prop: 0.3
   outs:
   - path: data/processed/test.npz
-    md5: d8d24637966ee645279d4a0a7ab5408d
+    md5: 2bc2be5dc06374e3a455f61fc3c2c164
   - path: data/processed/train.npz
-    md5: 2e3a47e0ca6130d1231f70c5802fe9dd
+    md5: 2151984c6012544797130dfbbf9fa556
   - path: models/indices.pickle
-    md5: 03aa2e9e8b51f9da3278b72dd3e7fbcb
+    md5: e726a3620a4ba19fcbeb9db49ddfc61c
 train:
   cmd: python src/train.py
   deps:
   - path: data/processed/test.npz
-    md5: d8d24637966ee645279d4a0a7ab5408d
+    md5: 2bc2be5dc06374e3a455f61fc3c2c164
   - path: data/processed/train.npz
-    md5: 2e3a47e0ca6130d1231f70c5802fe9dd
+    md5: 2151984c6012544797130dfbbf9fa556
   - path: src/CNN.py
     md5: 3d3d557d75f40ccf4a703b4495dff3e6
   - path: src/local_run.py
@@ -68,10 +68,12 @@ train:
       train.seq-length: 1000
       train.trunc-style: pre
   outs:
+  - path: models/assets
+    md5: d751713988987e9331980363e24189ce.dir
   - path: models/saved_model.pb
-    md5: 13f2365652f2b1b48913d61966a4bea5
+    md5: 3b65c7ae968da747e7378bced8a60214
   - path: models/variables
-    md5: 253316c42c9a340b33c97ebac9fbc203.dir
+    md5: 17a922d43ef371d7bb55ae3749667d12.dir
 download:
   cmd: python src/download.py
   deps:
