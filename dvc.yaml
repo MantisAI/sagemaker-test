@@ -38,6 +38,7 @@ stages:
     outs:
     - models/saved_model.pb
     - models/variables
+    - models/assets
     deps:
     - src/local_run.py
     - src/train.py
