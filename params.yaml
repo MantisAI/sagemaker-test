@@ -19,7 +19,7 @@ combine:
 
 prepare:
   data-path: data/intermediate/data.jsonl
-  test-prop: 0.25
+  test-prop: 0.3
 
 train:
   output-path: models

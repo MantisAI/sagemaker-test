@@ -28,21 +28,21 @@ prepare:
     params.yaml:
       common.processed-folder: data/processed
       prepare.data-path: data/intermediate/data.jsonl
-      prepare.test-prop: 0.25
+      prepare.test-prop: 0.3
   outs:
   - path: data/processed/test.npz
-    md5: 471a76fe49724da2d0a1013aaf0ce40a
+    md5: f64caed6ea814c49e9129e90100eeee6
   - path: data/processed/train.npz
-    md5: 33fd0bfd3e166e07714f8ec067b9d439
+    md5: 4fbbf5746347f8756e56134d24599611
   - path: models/indices.pickle
-    md5: 01f6115d4b4f353f27398c82be791084
+    md5: 1df1360e99c7fc5fba4c03cf32ca6cd1
 train:
   cmd: python src/train.py
   deps:
   - path: data/processed/test.npz
-    md5: 471a76fe49724da2d0a1013aaf0ce40a
+    md5: f64caed6ea814c49e9129e90100eeee6
   - path: data/processed/train.npz
-    md5: 33fd0bfd3e166e07714f8ec067b9d439
+    md5: 4fbbf5746347f8756e56134d24599611
   - path: src/CNN.py
     md5: 3d3d557d75f40ccf4a703b4495dff3e6
   - path: src/local_run.py
@@ -71,9 +71,9 @@ train:
   - path: models/assets
     md5: d751713988987e9331980363e24189ce.dir
   - path: models/saved_model.pb
-    md5: 0c8617a5dc042101cc3f6c7f3572023e
+    md5: eca970d175a4a7f371c6842cfb65fd21
   - path: models/variables
-    md5: 9de71a077f97349bcbdd4492173df45a.dir
+    md5: a51c5ecdcbcae7d87ba2645ef6428334.dir
 download:
   cmd: python src/download.py
   deps:
