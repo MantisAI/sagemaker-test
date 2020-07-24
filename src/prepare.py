@@ -29,20 +29,22 @@ app = typer.Typer()
 np.random.seed(1337)
 
 
+params = yaml.safe_load(open("params.yaml"))
+
 
 @app.command()
 def prepare(
-    data_path="data/intermediate/data.jsonl",
-    output_path="models",
-    model_output_path="models",
-    lowercase=True,
-    seq_length=1000,
-    num_words=1000,
-    oov_token="<OOV>",
-    padding_style="pre",
-    trunc_style="pre",
-    test_prop=0.3,
-    processed_path="data/processed",
+    data_path=params["common"]["all-data-path"],
+    output_path=params["train"]["output-path"],
+    model_output_path=params["train"]["model-output-path"],
+    lowercase=params["train"]["lowercase"],
+    seq_length=params["train"]["seq-length"],
+    num_words=params["train"]["num-words"],
+    oov_token=params["train"]["oov-token"],
+    padding_style=params["train"]["padding-style"],
+    trunc_style=params["train"]["trunc-style"],
+    test_prop=params["prepare"]["test-prop"],
+    processed_folder=params["common"]["processed-folder"],
 ):
     cnn = CNN(
         output_path=output_path,
@@ -71,7 +73,7 @@ def prepare(
 
     # Save split data to disk as np arrays
 
-    cnn.save_train_test_data(processed_path)
+    cnn.save_train_test_data(processed_folder)
 
 
 if __name__ == "__main__":

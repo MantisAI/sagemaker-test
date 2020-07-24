@@ -3,29 +3,22 @@
 """Simple training script
 """
 
-from __future__ import annotations
-
 import logging
 import os
 
 import numpy as np
+import yaml
+
+import dvc.api
+import mlflow.tensorflow
 import tensorflow as tf
 import typer
-from sklearn.metrics import (
-    classification_report,
-    confusion_matrix,
-    f1_score,
-    precision_score,
-    recall_score,
-)
+from mlflow import log_param, start_run
+from src.CNN import CNN
+from src.logger import logger
 from tensorflow.keras import optimizers
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import Tokenizer
-
-import mlflow
-import mlflow.tensorflow
-from src.CNN import CNN
-from src.logger import logger
 
 app = typer.Typer()
 
@@ -33,23 +26,51 @@ mlflow.tensorflow.autolog()
 
 np.random.seed(1337)
 
-# Note that type hints seem to fail in some cases due to issue with typer
-# So I've not included them here.
+params = yaml.safe_load(open("params.yaml"))
+
+
 @app.command()
 def train(
-    processed_path="data/processed",
-    output_path="models",
-    model_output_path="models",
-    embedding_path="data/raw/glove.6B.50d.txt",
-    embedding_dim=50,
-    batch_size=1024,
-    epochs=2,
-    learning_rate=0.01,
-    seq_length=1000,
-    checkpoint=True,
-    checkpoint_path="models",
+    batch_size=params["train"]["batch-size"],
+    checkpoint=params["train"]["checkpoint"],
+    checkpoint_path=params["train"]["checkpoint-path"],
+    embedding_dim=params["train"]["embedding-dim"],
+    embedding_path=params["train"]["embedding-path"],
+    epochs=params["train"]["epochs"],
+    learning_rate=params["train"]["learning-rate"],
+    model_output_path=params["train"]["model-output-path"],
+    output_path=params["train"]["output-path"],
+    processed_folder=params["common"]["processed-folder"],
+    seq_length=params["train"]["seq-length"],
 ):
-    with mlflow.start_run():
+    # Capture parameters that have been used in the dvc pipeline, but not
+    # directly here.
+
+    with start_run():
+
+        log_param(
+            "train_s3_file",
+            dvc.api.get_url(
+                os.path.join(params["common"]["processed-folder"], "train.npz")
+            ),
+        )
+        log_param(
+            "test_s3_file",
+            dvc.api.get_url(
+                os.path.join(params["common"]["processed-folder"], "test.npz")
+            ),
+        )
+
+        log_param("embedding_dim", params["train"]["embedding-dim"])
+        log_param("embedding_path", params["train"]["embedding-path"])
+        log_param("lowercase", params["train"]["lowercase"])
+        log_param("num_words", params["train"]["num-words"])
+        log_param("oov_token", params["train"]["oov-token"])
+        log_param("padding_style", params["train"]["padding-style"])
+        log_param("trunc_style", params["train"]["trunc-style"])
+        log_param("seq_length", params["train"]["seq-length"])
+        log_param("test_prop", params["prepare"]["test-prop"])
+
         # Create output path if not exists
 
         for path in [output_path, model_output_path, checkpoint_path]:
@@ -74,7 +95,7 @@ def train(
 
         # Load the data from disk
 
-        cnn.load_train_test_data(processed_path)
+        cnn.load_train_test_data(processed_folder)
 
         cnn.load_indices()
 

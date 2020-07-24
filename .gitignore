@@ -5,3 +5,4 @@ data
 embeddings
 models
 sagemaker_example.egg-info/
+mlruns/
