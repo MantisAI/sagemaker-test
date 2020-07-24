@@ -9,6 +9,8 @@ services:
       #target: app
     container_name: mnist
     entrypoint: python /opt/ml/code/train.py
+    environment:
+    - MLFLOW_URI=${MLFLOW_URI}
 
 
   gpu:
@@ -21,4 +23,6 @@ services:
       #target: app
     container_name: mnist
     entrypoint: python /opt/ml/code/train.py
+    environment:
+    - MLFLOW_URI=${MLFLOW_URI}
 

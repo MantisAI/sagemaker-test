@@ -23,6 +23,7 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 app = typer.Typer()
 
 mlflow.tensorflow.autolog()
+mlflow.set_tracking_uri(os.getenv(("MLFLOW_URI")))
 
 np.random.seed(1337)
 
