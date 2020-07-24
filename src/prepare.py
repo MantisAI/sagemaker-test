@@ -13,14 +13,6 @@ import numpy as np
 import tensorflow as tf
 import typer
 import yaml
-from sklearn.metrics import (
-    classification_report,
-    confusion_matrix,
-    f1_score,
-    precision_score,
-    recall_score,
-)
-from tensorflow.keras import optimizers
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import Tokenizer
 
@@ -35,6 +27,7 @@ app = typer.Typer()
 
 
 np.random.seed(1337)
+
 
 
 @app.command()
