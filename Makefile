@@ -55,24 +55,6 @@ docker-login:
 	sed -e "/export/!d" -e "s/export //g" $< > $@ 
 
 #
-# Get Raw data
-#
-
-DATA_BASE_URL := http://ai.stanford.edu/~amaas/data/sentiment
-RAW_DATA := aclImdb_v1.tar.gz
-
-data/raw: 
-	mkdir data/raw -p
-
-data/raw/$(RAW_DATA): data/raw
-	curl -L $(DATA_BASE_URL)/$(RAW_DATA) --output $@
-
-data/raw/aclImdb: data/raw/$(RAW_DATA)
-	(cd data/raw/ && tar -xf $(RAW_DATA))
-
-get_raw_data: data/raw/aclImdb
-
-#
 # Get glove word embedding
 #
 
@@ -99,45 +81,5 @@ sync_data_to_s3:
 .PHONY: sync_data_from_s3
 sync_data_from_s3:
 	aws s3 sync $(S3_BUCKET)/data/processed data/processed --exclude '*old/*'
-
-#
-# Create DVC run
-#
-
-.PHONY: combine
-combine:
-	dvc run --force -n combine \
-	    -d src/combine.py \
-	    -d data/raw/aclImdb/test/neg \
-	    -d data/raw/aclImdb/test/pos \
-	    -d data/raw/aclImdb/train/neg \
-	    -d data/raw/aclImdb/train/pos \
-	    -o data/processed/train.jsonl \
-	    -o data/processed/test.jsonl \
-	    python src/combine.py
-
-.PHONY: prepare
-prepare:
-	dvc run --force -n prepare \
-	    -d src/train.py \
-	    -d data/processed/train.jsonl \
-	    -d data/processed/test.jsonl \
-	    -o data/processed/train.npz \
-	    -o data/processed/test.npz \
-	    -o models/indices.pickle \
-	    python src/train.py prepare
-
-.PHONY: train
-train:
-	dvc run --force -n train  \
-	    -d src/train.py \
-	    -d models/indices.pickle \
-	    -d data/raw/glove.6B.50d.txt \
-	    -d data/processed/train.jsonl \
-	    -d data/processed/test.jsonl \
-	    -o models/saved_model.pb \
-	    -o models/variables \
-	    -o models/assets \
-	    python src/train.py train
 
 all: virtualenv

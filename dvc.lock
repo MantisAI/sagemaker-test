@@ -48,7 +48,7 @@ train:
   - path: src/local_run.py
     md5: 92692e6e4c4b0d48518e97accdb48b8e
   - path: src/train.py
-    md5: 4a297a52fbec7051c6251853f12e2144
+    md5: 18e1f0206be95bd0bf7e5a266d014347
   params:
     params.yaml:
       common.processed-folder: data/processed
@@ -61,7 +61,7 @@ train:
       train.learning-rate: 0.01
       train.lowercase: true
       train.model-output-path: models
-      train.num-words: 1000
+      train.num-words: 10000
       train.oov-token: <OOV>
       train.output-path: models
       train.padding-style: pre
@@ -71,9 +71,9 @@ train:
   - path: models/assets
     md5: d751713988987e9331980363e24189ce.dir
   - path: models/saved_model.pb
-    md5: 3b65c7ae968da747e7378bced8a60214
+    md5: 8250ba6a16fe642ce4be33b7fe3b92ef
   - path: models/variables
-    md5: 17a922d43ef371d7bb55ae3749667d12.dir
+    md5: e9809e4edaccc23511b38e44a991b2af.dir
 download:
   cmd: python src/download.py
   deps:

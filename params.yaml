@@ -7,6 +7,11 @@ common:
 download:
   data-url: http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz
 
+embedding:
+  we-url: http://nlp.stanford.edu/data/glove.6B.zip
+  we-archive-path: data/raw/glove.6B.zip
+  we-path: data/raw/glove.6B.50d.txt
+
 combine:
   label-mapping:
     pos: 1
@@ -27,7 +32,7 @@ train:
   learning-rate: 0.01
   epochs: 2
   lowercase: True
-  num-words: 1000
+  num-words: 10000
   seq-length: 1000
   oov-token: "<OOV>"
   padding-style: pre
