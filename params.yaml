@@ -2,7 +2,8 @@
 common:
   download-path: data/raw/data.tar.gz
   all-data-path: data/intermediate/data.jsonl
-  processed-folder: data/processed
+  train-path: data/processed/train.npz
+  test-path: data/processed/test.npz
 
 download:
   data-url: http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz

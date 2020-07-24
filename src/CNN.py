@@ -114,28 +114,24 @@ class CNN:
         self.tokenizer = indices["tokenizer"]
         self.word_index = self.tokenizer.word_index
 
-    def save_train_test_data(self, path: str):
+    def save_train_test_data(self, test_path: str, train_path: str):
         """Saves train and test data to disk as numpy arrays
 
         This is to ensure that a consistent dataset is used for single model
         runs, and is unrelated to cross validation.
 
         Args:
-            path: Path to folder in which train and test arrays will be stored.
-            basename: Base filename onto which one of ["_test", "_train"] will
-                be appended.
+            train_path: Path to training npz
+            test_path: Path to test npz
         """
 
-        train_path = os.path.join(path, "train")
-        test_path = os.path.join(path, "test")
+        np.savez(train_path[:-4], x=self.X_train_padded, y=self.y_train)
+        logger.info(f"Train data saved to {train_path}")
 
-        np.savez(train_path, x=self.X_train_padded, y=self.y_train)
-        logger.info(f"Train data saved to {train_path}.npz")
+        np.savez(test_path[:-4], x=self.X_test_padded, y=self.y_test)
+        logger.info(f"Train data saved to {test_path}")
 
-        np.savez(test_path, x=self.X_test_padded, y=self.y_test)
-        logger.info(f"Train data saved to {test_path}.npz")
-
-    def load_train_test_data(self, path: str):
+    def load_train_test_data(self, test_path: str, train_path: str):
         """Load data from pre-split numpy arrays
 
         Loads data from numpy arrays that were saved using the
@@ -143,13 +139,9 @@ class CNN:
         methods.
 
         Args:
-            path: Path to folder in which train and test arrays are stored.
-            basename: Base filename onto which one of ["_test", "_train"] will
-                be appended.
+            train_path: Path to training npz
+            test_path: Path to test npz
         """
-
-        train_path = os.path.join(path, "train.npz")
-        test_path = os.path.join(path, "test.npz")
 
         train = np.load(train_path, allow_pickle=True)
         logger.info(f"Train data loaded from {train_path}")
@@ -374,84 +366,3 @@ class CNN:
         # Don't save the model, this is handled by the checkpointer
         # tf.saved_model.save(self.model, self.model_output_path)
 
-
-# Note that type hints seem to fail in some cases due to issue with typer
-# So I've not included them here.
-@app.command()
-def train(
-    test_data_path="data/processed/test.jsonl",
-    train_data_path="data/processed/train.jsonl",
-    output_path="models",
-    model_output_path="models",
-    embedding_path="data/raw/glove.6B.50d.txt",
-    embedding_dim=50,
-    batch_size=1024,
-    epochs=3,
-    learning_rate=0.01,
-    lowercase=True,
-    seq_length=1000,
-    num_words=1000,
-    oov_token="<OOV>",
-    padding_style="pre",
-    trunc_style="pre",
-    checkpoint=True,
-    checkpoint_path="models",
-):
-    # Create output path if not exists
-
-    for path in [output_path, model_output_path, checkpoint_path]:
-        os.makedirs(path, exist_ok=True)
-
-    # Set up logging
-
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
-    fh = logging.FileHandler(os.path.join(output_path, "log.txt"))
-    fh.setFormatter(formatter)
-    logger.addHandler(fh)
-
-    # Instantiate the model class
-
-    cnn = CNN(
-        output_path=output_path,
-        model_output_path=model_output_path,
-        seq_length=int(seq_length),
-    )
-
-    # Load the data from disk
-
-    cnn.load_data(train_data_path, test_data_path)
-
-    # Prepare the data with tokenisation, padding, etc.
-
-    cnn.prep_data(
-        oov_token=oov_token,
-        trunc_style=trunc_style,
-        padding_style=padding_style,
-        num_words=int(num_words),
-        lowercase=lowercase,
-        save_tokenizer=True,
-    )
-
-    # Load word embedding from disk
-
-    cnn.load_word_embedding(
-        embedding_path=embedding_path, embedding_dim=int(embedding_dim),
-    )
-
-    # Load callbacks. These are consumed in the fit method
-
-    cnn.load_callbacks(checkpoint=checkpoint, checkpoint_path=checkpoint_path)
-
-    # Fit the model
-
-    cnn.fit(
-        epochs=int(epochs),
-        batch_size=int(batch_size),
-        learning_rate=float(learning_rate),
-    )
-
-
-if __name__ == "__main__":
-    app()

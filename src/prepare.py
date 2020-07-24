@@ -34,6 +34,8 @@ params = yaml.safe_load(open("params.yaml"))
 
 @app.command()
 def prepare(
+    test_path=params["common"]["test-path"],
+    train_path=params["common"]["train-path"],
     data_path=params["common"]["all-data-path"],
     output_path=params["train"]["output-path"],
     model_output_path=params["train"]["model-output-path"],
@@ -44,7 +46,6 @@ def prepare(
     padding_style=params["train"]["padding-style"],
     trunc_style=params["train"]["trunc-style"],
     test_prop=params["prepare"]["test-prop"],
-    processed_folder=params["common"]["processed-folder"],
 ):
     cnn = CNN(
         output_path=output_path,
@@ -73,7 +74,7 @@ def prepare(
 
     # Save split data to disk as np arrays
 
-    cnn.save_train_test_data(processed_folder)
+    cnn.save_train_test_data(test_path, train_path)
 
 
 if __name__ == "__main__":

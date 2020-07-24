@@ -30,7 +30,8 @@ stages:
     - data/processed/train.npz
     - models/indices.pickle
     params:
-    - common.processed-folder
+    - common.test-path
+    - common.train-path
     - prepare.test-prop
     - prepare.data-path
   train:
@@ -46,7 +47,8 @@ stages:
     - data/processed/test.npz
     - data/processed/train.npz
     params:
-    - common.processed-folder
+    - common.test-path
+    - common.train-path
     - train.output-path
     - train.model-output-path
     - train.embedding-path

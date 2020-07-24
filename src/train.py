@@ -6,19 +6,19 @@
 import logging
 import os
 
-import numpy as np
-import yaml
-
 import dvc.api
 import mlflow.tensorflow
+import numpy as np
 import tensorflow as tf
 import typer
+import yaml
 from mlflow import log_param, start_run
-from src.CNN import CNN
-from src.logger import logger
 from tensorflow.keras import optimizers
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import Tokenizer
+
+from src.CNN import CNN
+from src.logger import logger
 
 app = typer.Typer()
 
@@ -32,6 +32,8 @@ params = yaml.safe_load(open("params.yaml"))
 
 @app.command()
 def train(
+    train_path=params["common"]["train-path"],
+    test_path=params["common"]["test-path"],
     batch_size=params["train"]["batch-size"],
     checkpoint=params["train"]["checkpoint"],
     checkpoint_path=params["train"]["checkpoint-path"],
@@ -41,7 +43,6 @@ def train(
     learning_rate=params["train"]["learning-rate"],
     model_output_path=params["train"]["model-output-path"],
     output_path=params["train"]["output-path"],
-    processed_folder=params["common"]["processed-folder"],
     seq_length=params["train"]["seq-length"],
 ):
     # Capture parameters that have been used in the dvc pipeline, but not
@@ -50,16 +51,10 @@ def train(
     with start_run():
 
         log_param(
-            "train_s3_file",
-            dvc.api.get_url(
-                os.path.join(params["common"]["processed-folder"], "train.npz")
-            ),
+            "train_s3_file", dvc.api.get_url(params["common"]["train-path"]),
         )
         log_param(
-            "test_s3_file",
-            dvc.api.get_url(
-                os.path.join(params["common"]["processed-folder"], "test.npz")
-            ),
+            "test_s3_file", dvc.api.get_url(params["common"]["test-path"]),
         )
 
         log_param("embedding_dim", params["train"]["embedding-dim"])
@@ -96,7 +91,7 @@ def train(
 
         # Load the data from disk
 
-        cnn.load_train_test_data(processed_folder)
+        cnn.load_train_test_data(test_path, train_path)
 
         cnn.load_indices()
 
