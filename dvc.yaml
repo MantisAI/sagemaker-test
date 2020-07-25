@@ -32,6 +32,7 @@ stages:
     params:
     - common.test-path
     - common.train-path
+    - common.indices-path
     - prepare.test-prop
     - prepare.data-path
   train:
@@ -46,9 +47,11 @@ stages:
     - src/CNN.py
     - data/processed/test.npz
     - data/processed/train.npz
+    - models/indices.pickle
     params:
     - common.test-path
     - common.train-path
+    - common.indices-path
     - train.output-path
     - train.model-output-path
     - train.embedding-path

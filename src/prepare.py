@@ -37,6 +37,7 @@ def prepare(
     test_path=params["common"]["test-path"],
     train_path=params["common"]["train-path"],
     data_path=params["common"]["all-data-path"],
+    indices_path=params["common"]["indices-path"],
     output_path=params["train"]["output-path"],
     model_output_path=params["train"]["model-output-path"],
     lowercase=params["train"]["lowercase"],
@@ -70,7 +71,7 @@ def prepare(
 
     # Save the intermediate objects to disk
 
-    cnn.save_indices()
+    cnn.save_indices(indices_path)
 
     # Save split data to disk as np arrays
 

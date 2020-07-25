@@ -4,6 +4,7 @@ common:
   all-data-path: data/intermediate/data.jsonl
   train-path: data/processed/train.npz
   test-path: data/processed/test.npz
+  indices-path: models/indices.pickle
 
 download:
   data-url: http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz

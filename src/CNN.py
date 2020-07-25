@@ -85,7 +85,7 @@ class CNN:
         logger.info("Train data shape: %s, %s", len(self.X_train), len(self.y_train))
         logger.info("Test data shape: %s, %s", len(self.X_test), len(self.y_test))
 
-    def save_indices(self):
+    def save_indices(self, indices_path: str):
         """Save model artefacts to pickle
 
         Saves various model artefacts to a pickle file so that they can be
@@ -97,17 +97,17 @@ class CNN:
         indices["word_index"] = self.word_index
         indices["vocab_size"] = self.vocab_size
         indices["tokenizer"] = self.tokenizer
-        with open(os.path.join(self.output_path, "indices.pickle"), "wb") as f:
+        with open(indices_path, "wb") as f:
             pickle.dump(indices, f)
 
-    def load_indices(self):
+    def load_indices(self, indices_path: str):
         """Loads model artefacts from pickle
 
         Companion method to `save_indices()`. Loads an indices.pickle object
         that has been saved with the `save_indices()`.
         """
 
-        with open(os.path.join(self.output_path, "indices.pickle"), "rb") as f:
+        with open(indices_path, "rb") as f:
             indices = pickle.load(f)
         self.word_index = indices["word_index"]
         self.vocab_size = indices["vocab_size"]
@@ -365,4 +365,3 @@ class CNN:
 
         # Don't save the model, this is handled by the checkpointer
         # tf.saved_model.save(self.model, self.model_output_path)
-

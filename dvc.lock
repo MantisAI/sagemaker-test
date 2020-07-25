@@ -21,37 +21,41 @@ prepare:
   - path: data/intermediate/data.jsonl
     md5: 20e701f351e9dc573fc209517418165e
   - path: src/CNN.py
-    md5: 37a5f84bbca7ef2cd80368d52853e9a6
+    md5: 7b2a041bfaba26e58803c14069553150
   - path: src/prepare.py
-    md5: 65f0aced0c393527df5d3fb03d1f7919
+    md5: 4c7c45f49c76c8ca3b4a5104c345fb3d
   params:
     params.yaml:
+      common.indices-path: models/indices.pickle
       common.test-path: data/processed/test.npz
       common.train-path: data/processed/train.npz
       prepare.data-path: data/intermediate/data.jsonl
       prepare.test-prop: 0.3
   outs:
   - path: data/processed/test.npz
-    md5: 1fb8efee2b2a72620be143b1ab7cef64
+    md5: f2e2239bdf3f59036bef37c5b9b34d4b
   - path: data/processed/train.npz
-    md5: b008959e48ddd6ad713f71197aedb5eb
+    md5: 7ebc17818fcbdadfcfb0532446f78c85
   - path: models/indices.pickle
-    md5: c291062bd1a9aa7a7090dd812ee6250c
+    md5: 87af266a4d50c84540bbd31209fb29cc
 train:
   cmd: python src/train.py
   deps:
   - path: data/processed/test.npz
-    md5: 1fb8efee2b2a72620be143b1ab7cef64
+    md5: f2e2239bdf3f59036bef37c5b9b34d4b
   - path: data/processed/train.npz
-    md5: b008959e48ddd6ad713f71197aedb5eb
+    md5: 7ebc17818fcbdadfcfb0532446f78c85
+  - path: models/indices.pickle
+    md5: 87af266a4d50c84540bbd31209fb29cc
   - path: src/CNN.py
-    md5: 37a5f84bbca7ef2cd80368d52853e9a6
+    md5: 7b2a041bfaba26e58803c14069553150
   - path: src/local_run.py
     md5: 92692e6e4c4b0d48518e97accdb48b8e
   - path: src/train.py
-    md5: 39908ddf2e655d2432d459ca5eacb336
+    md5: d76322739f89bde4cb92c1a8065edcc1
   params:
     params.yaml:
+      common.indices-path: models/indices.pickle
       common.test-path: data/processed/test.npz
       common.train-path: data/processed/train.npz
       train.batch-size: 1024
@@ -73,9 +77,9 @@ train:
   - path: models/assets
     md5: d751713988987e9331980363e24189ce.dir
   - path: models/saved_model.pb
-    md5: 09f33678678613b18ecabf6983dbdcd8
+    md5: 91b859acd3e24c29c546db34a5d1534a
   - path: models/variables
-    md5: c409ae0e6e7888e3f888fe4fa577b2a7.dir
+    md5: 49f3a2be11f533f8e509fba361e64e28.dir
 download:
   cmd: python src/download.py
   deps:

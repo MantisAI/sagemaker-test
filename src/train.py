@@ -34,6 +34,7 @@ params = yaml.safe_load(open("params.yaml"))
 def train(
     train_path=params["common"]["train-path"],
     test_path=params["common"]["test-path"],
+    indices_path=params["common"]["indices-path"],
     batch_size=params["train"]["batch-size"],
     checkpoint=params["train"]["checkpoint"],
     checkpoint_path=params["train"]["checkpoint-path"],
@@ -51,10 +52,13 @@ def train(
     with start_run():
 
         log_param(
-            "train_s3_file", dvc.api.get_url(params["common"]["train-path"]),
+            "train_data", dvc.api.get_url(params["common"]["train-path"]),
         )
         log_param(
-            "test_s3_file", dvc.api.get_url(params["common"]["test-path"]),
+            "test_data", dvc.api.get_url(params["common"]["test-path"]),
+        )
+        log_param(
+            "indicies", dvc.api.get_url(params["common"]["indices-path"]),
         )
 
         log_param("embedding_dim", params["train"]["embedding-dim"])
@@ -93,7 +97,7 @@ def train(
 
         cnn.load_train_test_data(test_path, train_path)
 
-        cnn.load_indices()
+        cnn.load_indices(indices_path)
 
         # Load word embedding from disk
 
