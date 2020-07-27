@@ -10,16 +10,16 @@ import os
 import pickle
 
 import numpy as np
-import tensorflow as tf
-import typer
 import yaml
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-from tensorflow.keras.preprocessing.text import Tokenizer
 
 import src.logger
+import tensorflow as tf
+import typer
 from src.CNN import CNN
 from src.load_word_embedding import load_word_embedding
 from src.utils import read_jsonl
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.preprocessing.text import Tokenizer
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +48,9 @@ def prepare(
     trunc_style=params["train"]["trunc-style"],
     test_prop=params["prepare"]["test-prop"],
 ):
+    for path in [output_path, model_output_path, os.path.split(data_path)[0]]:
+        os.makedirs(path, exist_ok=True)
+
     cnn = CNN(
         output_path=output_path,
         model_output_path=model_output_path,
