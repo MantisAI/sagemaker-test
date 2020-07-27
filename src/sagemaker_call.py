@@ -49,7 +49,7 @@ estimator = Estimator(
         "embedding-path": "/opt/ml/input/data/word_embedding/" + word_embedding_file,
         "embedding-dim": 50,
         "batch-size": 1024,
-        "epochs": 5,
+        "epochs": 2,
         "learning-rate": 0.01,
         "seq-length": 1000,
         "checkpoint": True,
