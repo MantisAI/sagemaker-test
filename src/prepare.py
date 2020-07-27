@@ -48,7 +48,13 @@ def prepare(
     trunc_style=params["train"]["trunc-style"],
     test_prop=params["prepare"]["test-prop"],
 ):
-    for path in [output_path, model_output_path, os.path.split(data_path)[0]]:
+    for path in [
+        output_path,
+        model_output_path,
+        os.path.split(data_path)[0],
+        os.path.split(test_path)[0],
+        os.path.split(train_path)[0],
+    ]:
         os.makedirs(path, exist_ok=True)
 
     cnn = CNN(
