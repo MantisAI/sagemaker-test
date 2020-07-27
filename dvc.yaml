@@ -1,6 +1,6 @@
 stages:
   download:
-    cmd: python src/download.py
+    cmd: build/virtualenv/bin/python src/download.py
     deps:
     - src/download.py
     params:
@@ -9,7 +9,7 @@ stages:
     outs:
     - data/raw/data.tar.gz
   combine:
-    cmd: python src/combine.py
+    cmd: build/virtualenv/bin/python src/combine.py
     deps:
     - data/raw/data.tar.gz
     - src/combine.py
@@ -20,7 +20,7 @@ stages:
     - common.all-data-path
     - combine.label-mapping
   prepare:
-    cmd: python src/prepare.py
+    cmd: build/virtualenv/bin/python src/prepare.py
     deps:
     - data/intermediate/data.jsonl
     - src/prepare.py
@@ -36,7 +36,7 @@ stages:
     - prepare.test-prop
     - prepare.data-path
   train:
-    cmd: python src/train.py
+    cmd: build/virtualenv/bin/python src/train.py
     outs:
     - models/saved_model.pb
     - models/variables
