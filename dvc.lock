@@ -52,7 +52,7 @@ train:
   - path: src/local_run.py
     md5: 92692e6e4c4b0d48518e97accdb48b8e
   - path: src/train.py
-    md5: d76322739f89bde4cb92c1a8065edcc1
+    md5: dc78075ad05f55de0092f458435ad539
   params:
     params.yaml:
       common.indices-path: models/indices.pickle
@@ -77,9 +77,9 @@ train:
   - path: models/assets
     md5: d751713988987e9331980363e24189ce.dir
   - path: models/saved_model.pb
-    md5: 91b859acd3e24c29c546db34a5d1534a
+    md5: bd5397c08e4d29298aced6e7cb4a46f1
   - path: models/variables
-    md5: 49f3a2be11f533f8e509fba361e64e28.dir
+    md5: 5e6f79a31659dd6dda33747b618cbfd0.dir
 download:
   cmd: python src/download.py
   deps:
