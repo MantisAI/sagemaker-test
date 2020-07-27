@@ -71,12 +71,16 @@ To download all the data required to run the project (this will download all the
 NOTE: You will need to have an AWS account set up with the necessary credentials available in this project. This may mean setting up youe account with `aws config` using awscli, or setting your `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` in your project env vars. Note that this S3 bucket is set to 'requester pays', so you will be charged for the data transfer fees (an insignificant amount!).
 
 ```
-dvc pull
+
+# This just pulls the word embeddings, the rest of the files will be created
+# using dvc repro
+
+dvc pull data/raw/glove.6B.50d.txt
 ```
 
-At this point, you should probably create your own s3 bucket to house a dvc remote. Once you have created this, change the remote listed in the `.dvc/config` file to match your own bucket. This will allow you to have full DVC remote functionality, which would otherwise be impossible since the current s3 bucket is read only. Use the s3 bucket name that was output by terraform, or another bucket that you have access to.
 
-Once you have edited `./dvc/config` you can push the data to your remote with `dvc push`.
+At this point change the remote listed in the `.dvc/config` file to match your own bucket. This will allow you to have full DVC remote functionality, which would otherwise be impossible since the current s3 bucket is read only. Use the s3 bucket name that was output by terraform, or another bucket that you have access to.
+
 
 ### Set up MLFlow
 
@@ -89,10 +93,15 @@ mlflow ui
 
 The env var `MLFLOW_URI` should be set to `http://localhost:5000` to point to this server.
 
-To run the model locally, modify one of the parameters in `params.yaml`, for example change the number of epochs, or the train
+Finally navigate to `http://localhost:5000` in a browser.
 
+### Recreate the pipeline
 
+Once you have edited `./dvc/config` and have a local ML Flow server running, try to recreate the whole dvc pipeline with:
 
+```
+dvc repro
+```
 
 ## Resources
 
