@@ -1,8 +1,10 @@
 .mypy_cache/
 build/
-src/__pycache__/
-data
-embeddings
-models
-sagemaker_example.egg-info/
+data/
+embeddings/
 mlruns/
+models/
+sagemaker_example.egg-info/
+src/__pycache__/
+.dvc/cache/
+

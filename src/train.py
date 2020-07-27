@@ -58,7 +58,10 @@ def train(
             "test_data", dvc.api.get_url(params["common"]["test-path"]),
         )
         log_param(
-            "indicies", dvc.api.get_url(params["common"]["indices-path"]),
+            "indices", dvc.api.get_url(params["common"]["indices-path"]),
+        )
+        log_param(
+            "word_embedding", params["train"]["embedding-path"],
         )
 
         log_param("embedding_dim", params["train"]["embedding-dim"])

@@ -36,5 +36,6 @@ RUN pip install --no-cache-dir -r requirements.txt \
         && rm requirements.txt \
         && cp ./src/train.py ./train.py
 
-
+ARG MLFLOW_URI
+ENV MLFLOW_URI=${ML_FLOW_URI}
 ENV SAGEMAKER_PROGRAM train.py
