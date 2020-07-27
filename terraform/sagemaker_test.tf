@@ -38,7 +38,7 @@ module "sagemaker_execution_role" {
 
   create_role = true
 
-  role_name             = "sagemaker-execution-role"
+  role_name             = "sagemaker-exec-role"
   trusted_role_services = ["sagemaker.amazonaws.com"]
 
   custom_role_policy_arns = [
@@ -56,7 +56,8 @@ module "sagemaker_execution_role" {
 module "sagemaker_test_s3" {
   source = "terraform-aws-modules/s3-bucket/aws"
 
-  bucket_prefix = "sagemaker-test"
+  bucket_prefix = "sagemaker-test-"
+  force_destroy = true
 
   versioning = {
     enabled = false
@@ -76,7 +77,7 @@ output "sagameker_test_s3_bucket_name" {
   value = module.sagemaker_test_s3.this_s3_bucket_id
 }
 
-output "sagameker_role_arn" {
-  value = module.sagemaker_execution_assumable_role.this_iam_role_arn
+output "sagemaker_role_arn" {
+  value = module.sagemaker_execution_role.this_iam_role_arn
 }
 
