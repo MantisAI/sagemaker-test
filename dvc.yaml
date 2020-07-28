@@ -1,4 +1,14 @@
 stages:
+  download_word_embedding:
+    cmd: build/virtualenv/bin/python src/download_word_embedding.py
+    deps:
+    - src/download_word_embedding.py
+    params:
+    - embedding.we-archive-path
+    - embedding.we-path
+    - embedding.we-url
+    outs:
+    - data/raw/glove.6B.50d.txt
   download:
     cmd: build/virtualenv/bin/python src/download.py
     deps:
@@ -25,6 +35,7 @@ stages:
     - data/intermediate/data.jsonl
     - src/prepare.py
     - src/CNN.py
+    - data/raw/glove.6B.50d.txt
     outs:
     - data/processed/test.npz
     - data/processed/train.npz
@@ -42,6 +53,7 @@ stages:
     - models/variables
     - models/assets
     deps:
+    - data/raw/glove.6B.50d.txt
     - src/local_run.py
     - src/train.py
     - src/CNN.py
