@@ -54,7 +54,6 @@ stages:
     - models/assets
     deps:
     - data/raw/glove.6B.50d.txt
-    - src/local_run.py
     - src/train.py
     - src/CNN.py
     - data/processed/test.npz

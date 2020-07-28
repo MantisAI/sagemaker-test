@@ -1,4 +1,4 @@
 [core]
     remote = storage
 ['remote "storage"']
-    url = s3://muanalytics-dvc/sagemaker-test
+    url = s3://muanalytics-public/sagemaker-test
