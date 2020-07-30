@@ -9,6 +9,7 @@ import pickle
 import random
 
 import numpy as np
+
 import tensorflow as tf
 import typer
 from sklearn.metrics import (
@@ -18,13 +19,12 @@ from sklearn.metrics import (
     precision_score,
     recall_score,
 )
-from tensorflow.keras import optimizers
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-from tensorflow.keras.preprocessing.text import Tokenizer
-
 from src.load_word_embedding import load_word_embedding
 from src.logger import logger
 from src.utils import read_jsonl
+from tensorflow.keras import optimizers
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.preprocessing.text import Tokenizer
 
 app = typer.Typer()
 
@@ -90,8 +90,6 @@ class CNN:
 
         Saves various model artefacts to a pickle file so that they can be
         loaded at a later date for predictions.
-
-        Always saves to a default location: output_path + indices.pickle
         """
         indices = {}
         indices["word_index"] = self.word_index
@@ -256,6 +254,7 @@ class CNN:
             cnn_kernel_size: CNN kernel size.
             cnn_activation: Activation of final layer.
             dropout: Amount of dropout to use in model.
+            trainable: Continue trainin the word embedding?
         """
 
         word_input = tf.keras.Input(shape=(self.seq_length,))
@@ -301,20 +300,14 @@ class CNN:
             checkpoint_path: Path to where checkpoints will be saved.
         """
 
-        # early_stopping = tf.keras.callbacks.EarlyStopping(
-        #    monitor="val_loss",
-        #    patience=early_stopping_patience,
-        #    verbose=1,
-        #    mode="auto",
-        # )
+        early_stopping = tf.keras.callbacks.EarlyStopping(
+           monitor="val_loss",
+           patience=early_stopping_patience,
+           verbose=1,
+           mode="auto",
+        )
 
         # self.callbacks.append(early_stopping)
-
-        # reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(
-        #    monitor="val_loss", factor=0.2, patience=5, min_lr=0.0001
-        # )
-
-        # self.callbacks.append(reduce_lr)
 
         if checkpoint:
 
