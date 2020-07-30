@@ -3,10 +3,9 @@
 import logging
 import os
 
-import yaml
-
 import dvc.api
 import typer
+import yaml
 from sagemaker.estimator import Estimator
 
 app = typer.Typer()
@@ -27,7 +26,16 @@ indices_file = os.path.split(indices)[-1]
 
 
 @app.command()
-def main(gpu: bool = False, instance_type: str = "local"):
+def main(
+    gpu: bool = typer.Option(
+        False, "--gpu",
+        help="Should a GPU based docker image be used? If this flag is set, and you are running a SageMaker job, you must specify an instance with a GPU (e.g. ml.p2/3...).",
+    ),
+    instance_type: str = typer.Option(
+        "local",
+        help="SageMaker instance used to run the model, e.g. ml.p2.xlarge or ml.c5.xlarge. Setting this to local will run the container locally.",
+    ),
+):
 
     image_name = f"{REPO_URL}:{VERSION}"
 
