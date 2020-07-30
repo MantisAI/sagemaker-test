@@ -11,12 +11,9 @@ from sagemaker.estimator import Estimator
 
 app = typer.Typer()
 
-HOST = os.getenv("HOST")
-REPO = os.getenv("REPO")
+REPO_URL = os.getenv("REPO_URL")
 VERSION = os.getenv("VERSION")
-
 ROLE_ARN = os.getenv("ROLE_ARN")
-INSTANCE_TYPE = os.getenv("INSTANCE_TYPE")
 
 train = dvc.api.get_url("data/processed/train.npz")
 test = dvc.api.get_url("data/processed/test.npz")
@@ -28,10 +25,11 @@ test_file = os.path.split(test)[-1]
 word_embedding_file = os.path.split(word_embedding)[-1]
 indices_file = os.path.split(indices)[-1]
 
-@app.command()
-def main(gpu: bool = False):
 
-    image_name = f"{HOST}/{REPO}:{VERSION}"
+@app.command()
+def main(gpu: bool = False, instance_type: str = "local"):
+
+    image_name = f"{REPO_URL}:{VERSION}"
 
     if gpu:
         image_name = image_name + "-gpu"
@@ -50,7 +48,7 @@ def main(gpu: bool = False):
         image_name=image_name,
         role=ROLE_ARN,
         train_instance_count=1,
-        train_instance_type=INSTANCE_TYPE,
+        train_instance_type=instance_type,
         hyperparameters={
             "test-path": "/opt/ml/input/data/test/" + test_file,
             "train-path": "/opt/ml/input/data/train/" + train_file,
