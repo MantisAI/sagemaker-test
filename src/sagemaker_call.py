@@ -6,7 +6,10 @@ import os
 import yaml
 
 import dvc.api
+import typer
 from sagemaker.estimator import Estimator
+
+app = typer.Typer()
 
 HOST = os.getenv("HOST")
 REPO = os.getenv("REPO")
@@ -25,36 +28,49 @@ test_file = os.path.split(test)[-1]
 word_embedding_file = os.path.split(word_embedding)[-1]
 indices_file = os.path.split(indices)[-1]
 
-input_channels = {
-    "train": train,
-    "test": test,
-    "word_embedding": word_embedding,
-    "indices": indices,
-    # Setting these to file:// will upload the data from the local drive
-    # "train": "file://data/processed/train.jsonl",
-    # "test": "file://data/processed/test.jsonl",
-    # "word_embedding": "file://data/raw/glove.6B.50d.txt",
-}
-estimator = Estimator(
-    image_name=f"{HOST}/{REPO}:{VERSION}",
-    role=ROLE_ARN,
-    train_instance_count=1,
-    train_instance_type=INSTANCE_TYPE,
-    hyperparameters={
-        "test-path": "/opt/ml/input/data/test/" + test_file,
-        "train-path": "/opt/ml/input/data/train/" + train_file,
-        "indices-path": "/opt/ml/input/data/indices/" + indices_file,
-        "output-path": "/opt/ml/model/",
-        "model-output-path": "/opt/ml/model/",
-        "embedding-path": "/opt/ml/input/data/word_embedding/" + word_embedding_file,
-        "embedding-dim": 50,
-        "batch-size": 1024,
-        "epochs": 2,
-        "learning-rate": 0.01,
-        "seq-length": 1000,
-        "checkpoint": True,
-        "checkpoint-path": "/opt/ml/model/",
-    },
-)
+@app.command()
+def main(gpu: bool = False):
 
-estimator.fit(inputs=input_channels)
+    image_name = f"{HOST}/{REPO}:{VERSION}"
+
+    if gpu:
+        image_name = image_name + "-gpu"
+
+    input_channels = {
+        "train": train,
+        "test": test,
+        "word_embedding": word_embedding,
+        "indices": indices,
+        # Setting these to file:// will upload the data from the local drive
+        # "train": "file://data/processed/train.jsonl",
+        # "test": "file://data/processed/test.jsonl",
+        # "word_embedding": "file://data/raw/glove.6B.50d.txt",
+    }
+    estimator = Estimator(
+        image_name=image_name,
+        role=ROLE_ARN,
+        train_instance_count=1,
+        train_instance_type=INSTANCE_TYPE,
+        hyperparameters={
+            "test-path": "/opt/ml/input/data/test/" + test_file,
+            "train-path": "/opt/ml/input/data/train/" + train_file,
+            "indices-path": "/opt/ml/input/data/indices/" + indices_file,
+            "output-path": "/opt/ml/model/",
+            "model-output-path": "/opt/ml/model/",
+            "embedding-path": "/opt/ml/input/data/word_embedding/"
+            + word_embedding_file,
+            "embedding-dim": 50,
+            "batch-size": 1024,
+            "epochs": 2,
+            "learning-rate": 0.01,
+            "seq-length": 1000,
+            "checkpoint": True,
+            "checkpoint-path": "/opt/ml/model/",
+        },
+    )
+
+    estimator.fit(inputs=input_channels)
+
+
+if __name__ == "__main__":
+    app()
