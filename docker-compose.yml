@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   cpu:
-    image: ${HOST}/${REPO}:${VERSION}
+    image: ${REPO_URL}:${VERSION}
     build:
       context: .
       dockerfile: Dockerfile.cpu
@@ -13,7 +13,7 @@ services:
     entrypoint: python /opt/ml/code/train.py
 
   gpu:
-    image: ${HOST}/${REPO}:${VERSION}-gpu
+    image: ${REPO_URL}:${VERSION}-gpu
     build:
       context: .
       dockerfile: Dockerfile.gpu
