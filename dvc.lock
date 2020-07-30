@@ -14,12 +14,12 @@ combine:
       common.download-path: data/raw/data.tar.gz
   outs:
   - path: data/intermediate/data.jsonl
-    md5: be91221192611b7e5275eb40d6945b46
+    md5: db21fd64bff91690e37d42e3306022d7
 prepare:
   cmd: build/virtualenv/bin/python src/prepare.py
   deps:
   - path: data/intermediate/data.jsonl
-    md5: be91221192611b7e5275eb40d6945b46
+    md5: db21fd64bff91690e37d42e3306022d7
   - path: data/raw/glove.6B.50d.txt
     md5: 0fac3659c38a4c0e9432fe603de60b12
   - path: src/CNN.py
@@ -35,22 +35,22 @@ prepare:
       prepare.test-prop: 0.3
   outs:
   - path: data/processed/test.npz
-    md5: 8356842573ab06192ba9b410c2ccf5a9
+    md5: 8b5b7f168df77730ddb795bc59a11fd5
   - path: data/processed/train.npz
-    md5: fbffdc112bbc1660dbae61ad764625ee
+    md5: 193cd7654708e5ef30410e5126261627
   - path: models/indices.pickle
-    md5: 06e032ddbc25b4cdd48799e1fe87f6ab
+    md5: 902c4949791cccbdb15ec640cec405d0
 train:
   cmd: build/virtualenv/bin/python src/train.py
   deps:
   - path: data/processed/test.npz
-    md5: 8356842573ab06192ba9b410c2ccf5a9
+    md5: 8b5b7f168df77730ddb795bc59a11fd5
   - path: data/processed/train.npz
-    md5: fbffdc112bbc1660dbae61ad764625ee
+    md5: 193cd7654708e5ef30410e5126261627
   - path: data/raw/glove.6B.50d.txt
     md5: 0fac3659c38a4c0e9432fe603de60b12
   - path: models/indices.pickle
-    md5: 06e032ddbc25b4cdd48799e1fe87f6ab
+    md5: 902c4949791cccbdb15ec640cec405d0
   - path: src/CNN.py
     md5: 7b2a041bfaba26e58803c14069553150
   - path: src/train.py
@@ -79,9 +79,9 @@ train:
   - path: models/assets
     md5: d751713988987e9331980363e24189ce.dir
   - path: models/saved_model.pb
-    md5: 01120cb2f9bbc1eff6f0f8fcbf53a060
+    md5: 077653a4ecdf12149367355b27bda844
   - path: models/variables
-    md5: 2e33d4a13649b5cdc5d9fd5b721eeea1.dir
+    md5: 3cf791842daf509a2dc1132aa00a688e.dir
 download:
   cmd: build/virtualenv/bin/python src/download.py
   deps:
