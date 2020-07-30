@@ -1,5 +1,5 @@
 combine:
-  cmd: python src/combine.py
+  cmd: build/virtualenv/bin/python src/combine.py
   deps:
   - path: data/raw/data.tar.gz
     md5: 7c2ac02c03563afcf9b574c7e56c153a
@@ -14,16 +14,18 @@ combine:
       common.download-path: data/raw/data.tar.gz
   outs:
   - path: data/intermediate/data.jsonl
-    md5: 20e701f351e9dc573fc209517418165e
+    md5: be91221192611b7e5275eb40d6945b46
 prepare:
-  cmd: python src/prepare.py
+  cmd: build/virtualenv/bin/python src/prepare.py
   deps:
   - path: data/intermediate/data.jsonl
-    md5: 20e701f351e9dc573fc209517418165e
+    md5: be91221192611b7e5275eb40d6945b46
+  - path: data/raw/glove.6B.50d.txt
+    md5: 0fac3659c38a4c0e9432fe603de60b12
   - path: src/CNN.py
     md5: 7b2a041bfaba26e58803c14069553150
   - path: src/prepare.py
-    md5: 4c7c45f49c76c8ca3b4a5104c345fb3d
+    md5: ba19bcbc375d002070cfcdb3ff1cbcfa
   params:
     params.yaml:
       common.indices-path: models/indices.pickle
@@ -33,24 +35,24 @@ prepare:
       prepare.test-prop: 0.3
   outs:
   - path: data/processed/test.npz
-    md5: f2e2239bdf3f59036bef37c5b9b34d4b
+    md5: 8356842573ab06192ba9b410c2ccf5a9
   - path: data/processed/train.npz
-    md5: 7ebc17818fcbdadfcfb0532446f78c85
+    md5: fbffdc112bbc1660dbae61ad764625ee
   - path: models/indices.pickle
-    md5: 87af266a4d50c84540bbd31209fb29cc
+    md5: 06e032ddbc25b4cdd48799e1fe87f6ab
 train:
-  cmd: python src/train.py
+  cmd: build/virtualenv/bin/python src/train.py
   deps:
   - path: data/processed/test.npz
-    md5: f2e2239bdf3f59036bef37c5b9b34d4b
+    md5: 8356842573ab06192ba9b410c2ccf5a9
   - path: data/processed/train.npz
-    md5: 7ebc17818fcbdadfcfb0532446f78c85
+    md5: fbffdc112bbc1660dbae61ad764625ee
+  - path: data/raw/glove.6B.50d.txt
+    md5: 0fac3659c38a4c0e9432fe603de60b12
   - path: models/indices.pickle
-    md5: 87af266a4d50c84540bbd31209fb29cc
+    md5: 06e032ddbc25b4cdd48799e1fe87f6ab
   - path: src/CNN.py
     md5: 7b2a041bfaba26e58803c14069553150
-  - path: src/local_run.py
-    md5: 92692e6e4c4b0d48518e97accdb48b8e
   - path: src/train.py
     md5: dc78075ad05f55de0092f458435ad539
   params:
@@ -63,7 +65,7 @@ train:
       train.checkpoint-path: models
       train.embedding-dim: 50
       train.embedding-path: data/raw/glove.6B.50d.txt
-      train.epochs: 2
+      train.epochs: 3
       train.learning-rate: 0.01
       train.lowercase: true
       train.model-output-path: models
@@ -77,11 +79,11 @@ train:
   - path: models/assets
     md5: d751713988987e9331980363e24189ce.dir
   - path: models/saved_model.pb
-    md5: bd5397c08e4d29298aced6e7cb4a46f1
+    md5: 01120cb2f9bbc1eff6f0f8fcbf53a060
   - path: models/variables
-    md5: 5e6f79a31659dd6dda33747b618cbfd0.dir
+    md5: 2e33d4a13649b5cdc5d9fd5b721eeea1.dir
 download:
-  cmd: python src/download.py
+  cmd: build/virtualenv/bin/python src/download.py
   deps:
   - path: src/download.py
     md5: 20add3d649bf80b1d933c0ee547e8ee4
@@ -92,3 +94,55 @@ download:
   outs:
   - path: data/raw/data.tar.gz
     md5: 7c2ac02c03563afcf9b574c7e56c153a
+download_word_embedding:
+  cmd: build/virtualenv/bin/python src/download_word_embedding.py
+  deps:
+  - path: src/download_word_embedding.py
+    md5: f8947536ada725f4968464a86576a5bd
+  params:
+    params.yaml:
+      embedding.we-archive-path: data/raw/glove.6B.zip
+      embedding.we-url: http://nlp.stanford.edu/data/glove.6B.zip
+  outs:
+  - path: data/raw/glove.6B.zip
+    md5: 056ea991adb4740ac6bf1b6d9b50408b
+word_embedding:
+  cmd: build/virtualenv/bin/python src/download_word_embedding.py
+  deps:
+  - path: src/download_word_embedding.py
+    md5: 93808192c526146c64f48e83f5253606
+  params:
+    params.yaml:
+      embedding.we-archive-path: data/raw/glove.6B.zip
+      embedding.we-path: data/raw/glove.6B.50d.txt
+      embedding.we-url: http://nlp.stanford.edu/data/glove.6B.zip
+  outs:
+  - path: data/raw/glove.6B.50d.txt
+    md5: 0fac3659c38a4c0e9432fe603de60b12
+get_word_embedding:
+  cmd: build/virtualenv/bin/python src/get_word_embedding.py
+  deps:
+  - path: src/get_word_embedding.py
+    md5: 93808192c526146c64f48e83f5253606
+  params:
+    params.yaml:
+      embedding.we-archive-path: data/raw/glove.6B.zip
+      embedding.we-path: data/raw/glove.6B.50d.txt
+      embedding.we-url: http://nlp.stanford.edu/data/glove.6B.zip
+  outs:
+  - path: data/raw/glove.6B.50d.txt
+    md5: 0fac3659c38a4c0e9432fe603de60b12
+extract_word_embedding:
+  cmd: build/virtualenv/bin/python src/extract_word_embedding.py
+  deps:
+  - path: data/raw/glove.6B.zip
+    md5: 056ea991adb4740ac6bf1b6d9b50408b
+  - path: src/extract_word_embedding.py
+    md5: 9b213a1bc8f9d837925ae3bdbbf9d2b5
+  params:
+    params.yaml:
+      embedding.we-archive-path: data/raw/glove.6B.zip
+      embedding.we-path: data/raw/glove.6B.50d.txt
+  outs:
+  - path: data/raw/glove.6B.50d.txt
+    md5: 0fac3659c38a4c0e9432fe603de60b12
