@@ -14,16 +14,16 @@ combine:
       common.download-path: data/raw/data.tar.gz
   outs:
   - path: data/intermediate/data.jsonl
-    md5: db21fd64bff91690e37d42e3306022d7
+    md5: be91221192611b7e5275eb40d6945b46
 prepare:
   cmd: build/virtualenv/bin/python src/prepare.py
   deps:
   - path: data/intermediate/data.jsonl
-    md5: db21fd64bff91690e37d42e3306022d7
+    md5: be91221192611b7e5275eb40d6945b46
   - path: data/raw/glove.6B.50d.txt
     md5: 0fac3659c38a4c0e9432fe603de60b12
   - path: src/CNN.py
-    md5: 7b2a041bfaba26e58803c14069553150
+    md5: 0b41a21dc3b12a2ae00f3523623177e5
   - path: src/prepare.py
     md5: ba19bcbc375d002070cfcdb3ff1cbcfa
   params:
@@ -35,24 +35,24 @@ prepare:
       prepare.test-prop: 0.3
   outs:
   - path: data/processed/test.npz
-    md5: 8b5b7f168df77730ddb795bc59a11fd5
+    md5: babb03f841c4aae2ebcadd88f539387e
   - path: data/processed/train.npz
-    md5: 193cd7654708e5ef30410e5126261627
+    md5: f95f9ce5d899ceb2bc87f25d76a9ff12
   - path: models/indices.pickle
-    md5: 902c4949791cccbdb15ec640cec405d0
+    md5: f8288913805f3eb9cd20b8dce4c8df6f
 train:
   cmd: build/virtualenv/bin/python src/train.py
   deps:
   - path: data/processed/test.npz
-    md5: 8b5b7f168df77730ddb795bc59a11fd5
+    md5: babb03f841c4aae2ebcadd88f539387e
   - path: data/processed/train.npz
-    md5: 193cd7654708e5ef30410e5126261627
+    md5: f95f9ce5d899ceb2bc87f25d76a9ff12
   - path: data/raw/glove.6B.50d.txt
     md5: 0fac3659c38a4c0e9432fe603de60b12
   - path: models/indices.pickle
-    md5: 902c4949791cccbdb15ec640cec405d0
+    md5: f8288913805f3eb9cd20b8dce4c8df6f
   - path: src/CNN.py
-    md5: 7b2a041bfaba26e58803c14069553150
+    md5: 0b41a21dc3b12a2ae00f3523623177e5
   - path: src/train.py
     md5: dc78075ad05f55de0092f458435ad539
   params:
@@ -68,10 +68,10 @@ train:
       train.epochs: 3
       train.learning-rate: 0.01
       train.lowercase: true
-      train.model-output-path: models
+      train.model-output-path: file://models
       train.num-words: 10000
       train.oov-token: <OOV>
-      train.output-path: models
+      train.output-path: file://models
       train.padding-style: pre
       train.seq-length: 1000
       train.trunc-style: pre
@@ -79,9 +79,9 @@ train:
   - path: models/assets
     md5: d751713988987e9331980363e24189ce.dir
   - path: models/saved_model.pb
-    md5: 077653a4ecdf12149367355b27bda844
+    md5: 9b670c320987c74d05001b3ca56d8916
   - path: models/variables
-    md5: 3cf791842daf509a2dc1132aa00a688e.dir
+    md5: ad8964d59d2d5c0f1f7b312863e483aa.dir
 download:
   cmd: build/virtualenv/bin/python src/download.py
   deps:
