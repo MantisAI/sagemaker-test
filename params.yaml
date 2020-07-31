@@ -19,8 +19,8 @@ prepare:
   test-prop: 0.3
 
 train:
-  output-path: models
-  model-output-path: models
+  output-path: file://models
+  model-output-path: file://models
   embedding-path: data/raw/glove.6B.50d.txt
   embedding-dim: 50
   checkpoint: True
