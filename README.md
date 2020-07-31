@@ -21,17 +21,19 @@ Some things that I would like to include, but haven't implemented yet:
 
 * Allow docker containers to be interrupted and restarted mid training. This will allow us to make use of managed spot instances on AWS, potentially reducing the compute cost by 90%.
 * Model artefacts are not getting uploaded to MLFlow during training on SageMaker, although metrics and parameters are.
+* Model deployment (probably via SageMaker).
+* SageMaker (or Keras) autotuning.
 
 ## Prerequisites
 
-docker
-docker-compose
-Python 3.6.6+
-make
-ngrok
-direnv (or similar for handling env vars)
-terraform
-An AWS Account
+* docker
+* docker-compose
+* Python 3.6.6+
+* make
+* ngrok
+* direnv (or similar for handling env vars)
+* terraform
+* An AWS Account
 
 ## Some Infrastructure
 
