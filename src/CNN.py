@@ -244,16 +244,18 @@ class CNN:
         cnn_num_filters: int = 128,
         cnn_kernel_size: int = 5,
         cnn_activation: str = "relu",
-        dropout: float = 0.4,
+        max_pooling_size_0: int = 5,
+        max_pooling_size_1: int = 35,
         trainable: bool = True,
     ):
-        """ Simple Convolution Neural Network with regularisation
+        """ Simple Convolution Neural Network
 
         Args:
             cnn_num_filters: Number of filters.
             cnn_kernel_size: CNN kernel size.
             cnn_activation: Activation of final layer.
-            dropout: Amount of dropout to use in model.
+            max_pooling_size_0: Size of first two pooling layers.
+            max_pooling_size_1: Size of last max pooling layer.
             trainable: Continue trainin the word embedding?
         """
 
@@ -270,14 +272,26 @@ class CNN:
         x = word_embedding
         inputs = word_input
 
-        x = tf.keras.layers.Dropout(dropout)(x)
         x = tf.keras.layers.Conv1D(
             filters=cnn_num_filters,
             kernel_size=cnn_kernel_size,
             activation=cnn_activation,
         )(x)
-        x = tf.keras.layers.GlobalMaxPooling1D()(x)
+        x = tf.keras.layers.MaxPooling1D(max_pooling_size_0)(x)
+        x = tf.keras.layers.Conv1D(
+            filters=cnn_num_filters,
+            kernel_size=cnn_kernel_size,
+            activation=cnn_activation,
+        )(x)
+        x = tf.keras.layers.MaxPooling1D(max_pooling_size_0)(x)
+        x = tf.keras.layers.Conv1D(
+            filters=cnn_num_filters,
+            kernel_size=cnn_kernel_size,
+            activation=cnn_activation,
+        )(x)
+        x = tf.keras.layers.MaxPooling1D(max_pooling_size_1)(x)
         x = tf.keras.layers.Flatten()(x)
+        x = tf.keras.layers.Dense(128, activation="relu")(x)
         outputs = tf.keras.layers.Dense(1, activation="sigmoid")(x)
 
         return tf.keras.Model(inputs=inputs, outputs=outputs)
@@ -301,10 +315,10 @@ class CNN:
         """
 
         early_stopping = tf.keras.callbacks.EarlyStopping(
-           monitor="val_loss",
-           patience=early_stopping_patience,
-           verbose=1,
-           mode="auto",
+            monitor="val_loss",
+            patience=early_stopping_patience,
+            verbose=1,
+            mode="auto",
         )
 
         # self.callbacks.append(early_stopping)
