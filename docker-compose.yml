@@ -8,8 +8,9 @@ services:
       dockerfile: Dockerfile.cpu
       #target: app
       args:
+        BASE: ${CPU_BASE}
         MLFLOW_URI: ${MLFLOW_URI}
-    container_name: mnist
+    container_name: cpu
     entrypoint: python /opt/ml/code/train.py
 
   gpu:
@@ -18,9 +19,9 @@ services:
       context: .
       dockerfile: Dockerfile.gpu
       args:
-        GPU_BASE: ${GPU_BASE}
+        BASE: ${GPU_BASE}
         MLFLOW_URI: ${MLFLOW_URI}
       #target: app
-    container_name: mnist
+    container_name: gpu
     entrypoint: python /opt/ml/code/train.py
 

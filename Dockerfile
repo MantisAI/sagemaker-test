@@ -1,4 +1,6 @@
-FROM python:3.7.8-slim-buster
+ARG BASE
+
+FROM $BASE as base
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
@@ -22,12 +24,13 @@ WORKDIR /opt/ml/code
 
 COPY . .
 
-# 
-# NOTE: Because requirements.txt will end up in /opt/ml/code, SageMaker will try
-# to install all the packages when we run a job. This is a waste of time because
-# the packages will already be installed, so delete the requirements.txt to 
-# prevent this. We also need to move the train.py entrypoint to sit in 
-# /opt/ml/code so that SageMaker can find it.
+#
+# NOTE: that by installing out requirements.txt we will potentially be overwriting
+# dependencies set in the GPU_BASE image. This may cause a job to fail or the CPU
+# to be used instead of the GPU and will likely result in a larger image. 
+# The other approach is to just install manually here the dependencies which are
+# not already installed on the base image. This may cause your local virtualenv 
+# to be out of sync with the cotnainer which is undesireable.
 #
 
 RUN pip install --no-cache-dir -r requirements.txt \
@@ -37,5 +40,5 @@ RUN pip install --no-cache-dir -r requirements.txt \
         && cp ./src/train.py ./train.py
 
 ARG MLFLOW_URI
-ENV MLFLOW_URI=${ML_FLOW_URI}
+ENV MLFLOW_URI=$MLFLOW_URI
 ENV SAGEMAKER_PROGRAM train.py
