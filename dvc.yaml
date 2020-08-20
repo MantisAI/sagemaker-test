@@ -3,6 +3,7 @@ stages:
     cmd: build/virtualenv/bin/python src/download.py
     deps:
     - src/download.py
+    - requirements.txt
     params:
     - download.data-url
     - common.download-path
@@ -13,6 +14,7 @@ stages:
     deps:
     - data/raw/data.tar.gz
     - src/combine.py
+    - requirements.txt
     outs:
     - data/intermediate/data.jsonl
     params:
@@ -26,6 +28,7 @@ stages:
     - src/prepare.py
     - src/model.py
     - data/raw/glove.6B.50d.txt
+    - requirements.txt
     outs:
     - data/processed/test.npz
     - data/processed/train.npz
@@ -49,6 +52,7 @@ stages:
     - data/processed/test.npz
     - data/processed/train.npz
     - models/indices.pickle
+    - requirements.txt
     params:
     - common.test-path
     - common.train-path
