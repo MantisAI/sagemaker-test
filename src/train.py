@@ -6,19 +6,19 @@
 import logging
 import os
 
+import numpy as np
+import yaml
+
 import dvc.api
 import mlflow.tensorflow
-import numpy as np
 import tensorflow as tf
 import typer
-import yaml
 from mlflow import log_param, start_run
+from src.model import Model
+from src.logger import logger
 from tensorflow.keras import optimizers
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import Tokenizer
-
-from src.CNN import CNN
-from src.logger import logger
 
 app = typer.Typer()
 
@@ -46,8 +46,7 @@ def train(
     output_path=params["train"]["output-path"],
     seq_length=params["train"]["seq-length"],
 ):
-    # Capture parameters that have been used in the dvc pipeline, but not
-    # directly here.
+    # Capture parameters here for MLFLow that are used in the dvc pipeline.
 
     with start_run():
 
@@ -90,7 +89,7 @@ def train(
 
         # Instantiate the model class
 
-        cnn = CNN(
+        model = Model(
             output_path=output_path,
             model_output_path=model_output_path,
             seq_length=int(seq_length),
@@ -98,23 +97,23 @@ def train(
 
         # Load the data from disk
 
-        cnn.load_train_test_data(test_path, train_path)
+        model.load_train_test_data(test_path, train_path)
 
-        cnn.load_indices(indices_path)
+        model.load_indices(indices_path)
 
         # Load word embedding from disk
 
-        cnn.load_word_embedding(
+        model.load_word_embedding(
             embedding_path=embedding_path, embedding_dim=int(embedding_dim),
         )
 
         # Load callbacks. These are consumed in the fit method
 
-        cnn.load_callbacks(checkpoint=checkpoint, checkpoint_path=checkpoint_path)
+        model.load_callbacks(checkpoint=checkpoint, checkpoint_path=checkpoint_path)
 
         # Fit the model
 
-        cnn.fit(
+        model.fit(
             epochs=int(epochs),
             batch_size=int(batch_size),
             learning_rate=float(learning_rate),

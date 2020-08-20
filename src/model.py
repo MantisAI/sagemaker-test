@@ -32,7 +32,7 @@ app = typer.Typer()
 np.random.seed(1337)
 
 
-class CNN:
+class Model:
     def __init__(
         self, output_path: str, model_output_path: str, seq_length: int = 1000,
     ):
@@ -160,7 +160,6 @@ class CNN:
         padding_style: str = "pre",
         num_words: int = 10000,
         lowercase: bool = True,
-        save_tokenizer: bool = False,
     ):
         """Prepare data for model fitting
 
@@ -174,7 +173,6 @@ class CNN:
                 Anything shorter or longer will be padded or truncated using
                 the respective style defined by trinc_style and padding_style.
             lowercase: Convert tokens to lowercase when tokenizing.
-            save_tokenizer: Save tokenizer to pickle using `save_tokenizer()`.
         """
 
         self.tokenizer = Tokenizer(
@@ -183,9 +181,6 @@ class CNN:
         self.tokenizer.fit_on_texts(self.X_train)
 
         self.word_index = self.tokenizer.word_index
-
-        if save_tokenizer:
-            self.save_tokenizer()
 
         self.vocab_size = len(self.word_index)
 
@@ -213,14 +208,6 @@ class CNN:
             truncating=trunc_style,
             padding=padding_style,
         )
-
-    def save_tokenizer(self):
-        """Save tokenizer to pickle
-
-        Always saves to a default location: output_path + tokenizer.pickle
-        """
-        with open(os.path.join(self.output_path, "tokenizer.pickle"), "wb") as f:
-            pickle.dump(self.tokenizer, f)
 
     def load_word_embedding(self, embedding_path, embedding_dim):
         """Load and prepare word embedding

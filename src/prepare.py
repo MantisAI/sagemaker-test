@@ -15,7 +15,7 @@ import yaml
 import src.logger
 import tensorflow as tf
 import typer
-from src.CNN import CNN
+from src.model import Model
 from src.load_word_embedding import load_word_embedding
 from src.utils import read_jsonl
 from tensorflow.keras.preprocessing.sequence import pad_sequences
@@ -57,7 +57,7 @@ def prepare(
     ]:
         os.makedirs(path, exist_ok=True)
 
-    cnn = CNN(
+    model = Model(
         output_path=output_path,
         model_output_path=model_output_path,
         seq_length=int(seq_length),
@@ -65,26 +65,25 @@ def prepare(
 
     # Load the data from disk
 
-    cnn.load_data(data_path, test_prop)
+    model.load_data(data_path, test_prop)
 
     # Prepare the data with tokenisation, padding, etc.
 
-    cnn.prep_data(
+    model.prep_data(
         oov_token=oov_token,
         trunc_style=trunc_style,
         padding_style=padding_style,
         num_words=int(num_words),
         lowercase=lowercase,
-        save_tokenizer=True,
     )
 
     # Save the intermediate objects to disk
 
-    cnn.save_indices(indices_path)
+    model.save_indices(indices_path)
 
     # Save split data to disk as np arrays
 
-    cnn.save_train_test_data(test_path, train_path)
+    model.save_train_test_data(test_path, train_path)
 
 
 if __name__ == "__main__":

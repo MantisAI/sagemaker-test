@@ -24,7 +24,7 @@ stages:
     deps:
     - data/intermediate/data.jsonl
     - src/prepare.py
-    - src/CNN.py
+    - src/model.py
     - data/raw/glove.6B.50d.txt
     outs:
     - data/processed/test.npz
@@ -45,7 +45,7 @@ stages:
     deps:
     - data/raw/glove.6B.50d.txt
     - src/train.py
-    - src/CNN.py
+    - src/model.py
     - data/processed/test.npz
     - data/processed/train.npz
     - models/indices.pickle

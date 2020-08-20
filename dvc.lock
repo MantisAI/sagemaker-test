@@ -22,10 +22,10 @@ prepare:
     md5: be91221192611b7e5275eb40d6945b46
   - path: data/raw/glove.6B.50d.txt
     md5: 0fac3659c38a4c0e9432fe603de60b12
-  - path: src/CNN.py
-    md5: 837e4fd4996fd135cf5dd47d2315121a
+  - path: src/model.py
+    md5: 69c676f04f8d058d76b47993344ee74a
   - path: src/prepare.py
-    md5: ba19bcbc375d002070cfcdb3ff1cbcfa
+    md5: 6f3741b66d895383e2f93399e3cb837a
   params:
     params.yaml:
       common.indices-path: models/indices.pickle
@@ -35,26 +35,26 @@ prepare:
       prepare.test-prop: 0.3
   outs:
   - path: data/processed/test.npz
-    md5: b2d59bcf42b643b72f423a726fda1af7
+    md5: f0c76be3223b72ae510646fbf950ba41
   - path: data/processed/train.npz
-    md5: 2a5ac6ee37410f9e49ebba33350b114a
+    md5: e725f14be6ac3d57f454b90314367073
   - path: models/indices.pickle
-    md5: 2a69386142570b49434637374e5cd40f
+    md5: dad165b91c89a00b911e36fa74b19c9f
 train:
   cmd: build/virtualenv/bin/python src/train.py
   deps:
   - path: data/processed/test.npz
-    md5: b2d59bcf42b643b72f423a726fda1af7
+    md5: f0c76be3223b72ae510646fbf950ba41
   - path: data/processed/train.npz
-    md5: 2a5ac6ee37410f9e49ebba33350b114a
+    md5: e725f14be6ac3d57f454b90314367073
   - path: data/raw/glove.6B.50d.txt
     md5: 0fac3659c38a4c0e9432fe603de60b12
   - path: models/indices.pickle
-    md5: 2a69386142570b49434637374e5cd40f
-  - path: src/CNN.py
-    md5: c172bc716b5df5a442adaba0b6e0f767
+    md5: dad165b91c89a00b911e36fa74b19c9f
+  - path: src/model.py
+    md5: 69c676f04f8d058d76b47993344ee74a
   - path: src/train.py
-    md5: dc78075ad05f55de0092f458435ad539
+    md5: c0952cfd6b2bfe1e6a5942cbb6565b5e
   params:
     params.yaml:
       common.indices-path: models/indices.pickle
@@ -79,9 +79,9 @@ train:
   - path: models/assets
     md5: d751713988987e9331980363e24189ce.dir
   - path: models/saved_model.pb
-    md5: d0024bd891d22d7de1d47e7cf143e838
+    md5: e229898314fa28a19bc7f7ea2600652e
   - path: models/variables
-    md5: 8ec2b61bf4afd42342382b4798d80dda.dir
+    md5: aa288bafe8edec015850c23e1545f6cb.dir
 download:
   cmd: build/virtualenv/bin/python src/download.py
   deps:
